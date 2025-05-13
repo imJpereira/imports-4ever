@@ -10,9 +10,9 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="HomeScreen"
+          name="Página Principal"
           options={{
-            headerBackTitle: "Personagens",
+            headerBackTitle: "Home",
             headerTitleAlign: "center",
           }}
           component={HomeScreen}

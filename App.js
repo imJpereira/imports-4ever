@@ -10,7 +10,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="Página Principal"
+          name="4Ever Imports"
           options={{
             headerBackTitle: "Home",
             headerTitleAlign: "center",

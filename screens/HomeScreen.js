@@ -1,5 +1,7 @@
 import { View, FlatList, StyleSheet, Text } from "react-native";
 import ProductCard from "../components/ProductCard";
+import MiniProductType from "../components/MiniProductType";
+
 
 export default function HomeScreen({navigation}) {
 
@@ -203,24 +205,62 @@ export default function HomeScreen({navigation}) {
         //   soldCount: 74
         // }
       ];
+
+    const sports = [
+      {
+        id: 1,
+        name: "Camisetas",
+        url: "adwada",
+      },
+      {
+        id: 2,
+        name: "Jerseys",
+        url: "wdawdadad",
+      },
+      {
+        id: 3,
+        name: "Tênis",
+        url: "wdawdadad",
+      },
+      {
+        id: 4,
+        name: "Moletons",
+        url: "wdawdadad",
+      },
+    ]
       
     return(
         <View style={styles.mainContainer}>
-            <Text style={styles.subtitle}>Favoritos dos fanáticos</Text>
-            <FlatList 
-                data={products}
-                numColumns={2}
-                keyExtractor={(item) => item.name}
-                renderItem={({item}) => {
-                    return <ProductCard
-                            product={{...item}}
-                            onPress={() => console.log("")} 
-                            />
-                }}
-                contentContainerStyle={styles.list}                
-            />  
-            
+            <View style={styles.listContainer}>
+              <FlatList 
+                  data={sports}
+                  horizontal={true}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({item}) => {
+                      return <MiniProductType
+                              type={{...item}}
+                              onPress={() => console.log("")} 
+                              />
+                  }}
+                  contentContainerStyle={styles.list}                
+              />  
+            </View>
 
+            <View style={styles.listContainer}>
+              <Text style={styles.subtitle}>MAIS VISTOS</Text>
+              <FlatList 
+                  data={products}
+                  horizontal={true}
+                  keyExtractor={(item) => item.name}
+                  renderItem={({item}) => {
+                      return <ProductCard
+                              product={{...item}}
+                              onPress={() => console.log("")} 
+                              />
+                  }}
+                  contentContainerStyle={styles.list}                
+              />  
+            </View>            
         </View>
     );
 }
@@ -228,14 +268,18 @@ export default function HomeScreen({navigation}) {
 const styles = StyleSheet.create({
 
     mainContainer: {
-        padding: 10
+        padding: 10,
     },
     list: {
-        alignItems: 'center'
+        alignItems: 'center',
     },
     subtitle: {
         fontSize: 20,
-        marginBottom: 10
+        marginBottom: 10,
+        fontWeight: 500
+    },
+    listContainer: {
+      marginTop: 30,
     }
 
 });

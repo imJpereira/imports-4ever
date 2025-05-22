@@ -40,6 +40,10 @@ const styles = StyleSheet.create({
         height: 280,
         margin: 10,
         backgroundColor: '#e9e9e9',
+        borderColor: '#a1a1a1',
+        borderWidth: 0.8,
+        borderRadius: 8,
+        elevation: 6,
     },
     image: {
         height: '100%',

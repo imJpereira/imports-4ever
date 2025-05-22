@@ -20,14 +20,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         margin: 5,
-        width: 200,
-        height: 100,
+        width: 170,
+        height: 60,
         borderRadius: 8,
-        backgroundColor: "#a3a3a3",
+        backgroundColor: "#228B22",
     },
+    //backgroundColor: "#90EE90", quando botão selecionado usar esse background
     typeName: {
         textAlign: 'center',
-        fontSize: 24,
+        fontSize: 20,
+        color: '#fff',
+        fontWeight:500,
     }
 
 });; 

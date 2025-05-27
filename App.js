@@ -11,27 +11,17 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ color, size }) => {
-            let iconName;
-
-            if (route.name === 'Conta') {
-              iconName = 'person-circle-outline';
-            } else if (route.name === 'Pedidos') {
-              iconName = 'list-circle-outline';
-            }
-
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          tabBarActiveTintColor: '#007AFF',
-          tabBarInactiveTintColor: 'gray',
-          headerShown: false,
-        })}
-      >
-        <Tab.Screen name="Conta" component={AccountScreen} />
-        <Tab.Screen name="Pedidos" component={OrderScreen} />
-      </Tab.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="4Ever Imports"
+          options={{
+            headerBackTitle: "Home",
+            headerTitleAlign: "center",
+          }}
+          component={HomeScreen}
+        >
+        </Stack.Screen>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

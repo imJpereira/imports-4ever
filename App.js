@@ -1,11 +1,14 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "./screens/HomeScreen";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+
+import AccountScreen from './screens/AccountScreen';
+import OrderScreen from './screens/OrderScreen';
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
-  
-  const Stack = createNativeStackNavigator();
-  
   return (
     <NavigationContainer>
       <Stack.Navigator>

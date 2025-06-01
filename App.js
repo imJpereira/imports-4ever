@@ -16,7 +16,7 @@ export default function App() {
             headerTitleAlign: "center",
           }}
           component={HomeScreen}
-        >
+          >
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>

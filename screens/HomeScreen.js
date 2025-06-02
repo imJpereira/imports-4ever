@@ -283,7 +283,7 @@ export default function HomeScreen({navigation}) {
                   renderItem={({item}) => {
                       return <MiniProductType
                               type={{...item}}
-                              onPress={() => console.log("")} 
+                              onPress={() => navigation.navigate('Account')} 
                               />
                   }}
                   contentContainerStyle={styles.list}                

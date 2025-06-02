@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
 
-export default function RegisterScreen({ navigation }) {
+export default function SignUp({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>4ever{"\n"}Imports</Text>
@@ -23,7 +23,7 @@ export default function RegisterScreen({ navigation }) {
         <TextInput placeholder="Confirmar senha:" style={styles.input} secureTextEntry />
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HomePage')}>
         <Text style={styles.buttonText}>Registrar</Text>
       </TouchableOpacity>
 

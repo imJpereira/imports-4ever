@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
-import { Ionicons, Feather, MaterialIcons, AntDesign, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, Feather, MaterialIcons, AntDesign  } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 export default function AccountScreen() {
@@ -48,7 +48,7 @@ export default function AccountScreen() {
               />
             ) : (
               <Text style={styles.userName}>
-                Olá, <Text style={{ fontWeight: 'bold' }}>{userName}</Text>!
+                Olá, <Text style={{ fontWeight: 'bold' }}>{userName}</Text>
               </Text>
             )}
             <TouchableOpacity onPress={toggleEditing} style={{ marginLeft: 8 }}>
@@ -79,7 +79,7 @@ export default function AccountScreen() {
 
       <TouchableOpacity
         style={styles.option}
-        onPress={() => navigation.navigate('Pedidos')}
+        onPress={() => navigation.navigate('OrderScreen')}
       >
         <Feather name="box" size={24} color="#06C823" />
         <View style={styles.optionText}>

@@ -22,14 +22,14 @@ export default function SignInScreen({ navigation }) {
         <Text style={styles.forgotText}>Esqueceu sua senha?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HomePage')}>
         <Text style={styles.buttonText}>Acessar</Text>
       </TouchableOpacity>
 
       <TouchableOpacity>
         <Text style={styles.bottomText}>
           Ainda não possui uma conta?{' '}
-          <Text style={styles.link} onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.link} onPress={() => navigation.navigate('SignUp')}>
             Cadastre-se
           </Text>
         </Text>

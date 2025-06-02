@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
         width: 170,
         height: 60,
         borderRadius: 8,
-        backgroundColor: "#228B22",
+        backgroundColor: "#06C823",
     },
     //backgroundColor: "#90EE90", quando botão selecionado usar esse background
     typeName: {

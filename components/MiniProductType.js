@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 
-export default function MiniProductType({type, onPress}) {
-    
+export default function MiniProductType({type, onPress}) {    
 
     return (
         <Pressable

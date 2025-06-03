@@ -23,15 +23,6 @@ export default function AccountScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={28} color="#06C823" />
-        </TouchableOpacity>
-        <Text style={styles.header}>4ever Imports</Text>
-        <TouchableOpacity onPress={() => Alert.alert('Logout', 'Você saiu da sua conta.')}>
-          <MaterialIcons name="logout" size={28} color="red" />
-        </TouchableOpacity>
-      </View>
 
       <View style={styles.userInfo}>
         <Ionicons name="person-circle-outline" size={70} color="#999" />
@@ -58,24 +49,6 @@ export default function AccountScreen() {
           <Text style={styles.registerDate}>Cadastrado em 18/03/2025</Text>
         </View>
       </View>
-
-      <TouchableOpacity style={styles.option}>
-        <Feather name="bell" size={24} color="#06C823" />
-        <View style={styles.optionText}>
-          <Text style={styles.optionTitle}>Notificações</Text>
-          <Text style={styles.optionSubtitle}>Fique por dentro das novidades</Text>
-        </View>
-        <Feather name="chevron-right" size={24} color="#06C823" />
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.option}>
-        <Feather name="list" size={24} color="#06C823" />
-        <View style={styles.optionText}>
-          <Text style={styles.optionTitle}>Categorias</Text>
-          <Text style={styles.optionSubtitle}>Encontre o que precisa com facilidade</Text>
-        </View>
-        <Feather name="chevron-right" size={24} color="#06C823" />
-      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.option}
@@ -106,14 +79,6 @@ export default function AccountScreen() {
         </View>
         <Feather name="chevron-right" size={24} color="#06C823" />
       </TouchableOpacity>
-
-      <Text style={styles.socialText}>Acompanhe nossas redes sociais</Text>
-      <View style={styles.socialIcons}>
-        <AntDesign name="instagram" size={24} color="#06C823" />
-        <Feather name="facebook" size={24} color="#06C823" />
-        <AntDesign name="twitter" size={24} color="#06C823" />
-        <AntDesign name="youtube" size={24} color="#06C823" />
-      </View>
 
       <Text style={styles.version}>Versão 1.0</Text>
     </ScrollView>
@@ -150,11 +115,5 @@ const styles = StyleSheet.create({
   optionText: { flex: 1, marginLeft: 10 },
   optionTitle: { fontSize: 16, fontWeight: 'bold', color: '#000' },
   optionSubtitle: { fontSize: 14, color: '#666' },
-  socialText: { textAlign: 'center', marginTop: 20, marginBottom: 10, color: '#666' },
-  socialIcons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-  },
   version: { textAlign: 'center', color: '#666' },
 });

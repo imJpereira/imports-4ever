@@ -255,7 +255,7 @@ export default function HomeScreen({navigation}) {
       
     return(
         <View style={styles.mainContainer}>
-          <ScrollView style={styles.baseScroll}>
+          <ScrollView>
             <View style={styles.listContainer}>
               <Text style={styles.subtitle}>MAIS VISTOS</Text>
               <FlatList 
@@ -283,7 +283,7 @@ export default function HomeScreen({navigation}) {
                   renderItem={({item}) => {
                       return <MiniProductType
                               type={{...item}}
-                              onPress={() => navigation.navigate('Account')} 
+                              onPress={() => console.log("")} 
                               />
                   }}
                   contentContainerStyle={styles.list}                
@@ -316,9 +316,6 @@ const styles = StyleSheet.create({
 
     mainContainer: {
         padding: 10,
-    },
-    baseScroll: {
-      marginBottom: 20,
     },
     list: {
         alignItems: 'center',

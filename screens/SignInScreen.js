@@ -22,7 +22,7 @@ export default function SignInScreen({ navigation }) {
         <Text style={styles.forgotText}>Esqueceu sua senha?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HomePage')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainTabs')}>
         <Text style={styles.buttonText}>Acessar</Text>
       </TouchableOpacity>
 

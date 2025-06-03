@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import OrderScreen from './screens/OrderScreen';
 import NavigationBar from './components/NavigationBar';
+import SignInScreen from './screens/SignInScreen'
+import SignUpScreen from './screens/SignUpScreen'
 
 const Stack = createNativeStackNavigator();
 
@@ -10,6 +12,24 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+          <Stack.Screen
+            name="SignIn"
+            options={{
+              headerBackTitle: "Entrar",
+              headerTitleAlign: "center",
+            }}
+            component={SignInScreen}
+          ></Stack.Screen>
+
+          <Stack.Screen
+            name="SignUp"
+            options={{
+              headerBackTitle: "Cadastrar",
+              headerTitleAlign: "center",
+            }}
+            component={SignUpScreen}
+          ></Stack.Screen>
+
           <Stack.Screen
             name="MainTabs"
             options={{

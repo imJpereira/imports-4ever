@@ -23,7 +23,7 @@ export default function SignUp({ navigation }) {
         <TextInput placeholder="Confirmar senha:" style={styles.input} secureTextEntry />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('HomePage')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainTabs')}>
         <Text style={styles.buttonText}>Registrar</Text>
       </TouchableOpacity>
 

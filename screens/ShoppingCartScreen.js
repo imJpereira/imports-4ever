@@ -1,68 +1,73 @@
-import React, { useContext } from 'react';
-import { View, Text, FlatList, Image, Button, TouchableOpacity, StyleSheet } from 'react-native';
-import { CartContext } from '../contexts/CartContext';
+import { View, Text, ScrollView, FlatList } from "react-native";
+import ProductShoppingCartCard from "../components/ProductShoppingCartCard";
 
-const ShoppingCartScreen = () => {
-  const { cartItems, total, removeFromCart, updateQuantity } = useContext(CartContext);
-
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.details}>
-        <Text style={styles.title}>{item.name}</Text>
-        <Text>R$ {item.price.toFixed(2)}</Text>
-        <View style={styles.quantityRow}>
-          <TouchableOpacity onPress={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}>
-            <Text style={styles.quantityButton}>-</Text>
-          </TouchableOpacity>
-          <Text style={styles.quantityText}>{item.quantity}</Text>
-          <TouchableOpacity onPress={() => updateQuantity(item.id, item.quantity + 1)}>
-            <Text style={styles.quantityButton}>+</Text>
-          </TouchableOpacity>
-        </View>
-        <Button title="Remover" color="red" onPress={() => removeFromCart(item.id)} />
-      </View>
-    </View>
-  );
-
-  return (
-    <View style={styles.container}>
-      {cartItems.length === 0 ? (
-        <Text style={styles.emptyText}>Seu carrinho está vazio</Text>
-      ) : (
-        <>
+export default function ShoppingCartScreen({navigation}){
+  
+  const products =[{
+    id: 1,
+    productName: "Camisa do Internacional",
+    productType: "camisa",
+    productPrice: 199.99,
+    productNumber: 2,
+    productImage: "https://acdn-us.mitiendanube.com/stores/001/402/723/products/46ad91371-749d1d84e172a0717516752739475657-640-0.jpg"
+  },
+  {
+    id: 2,
+    productName: "Camisa do Bagual do Sul",
+    productType: "camisa",
+    productPrice: 300,
+    productNumber: 1,
+    productImage: "https://acdn-us.mitiendanube.com/stores/001/055/309/products/376fad4f1-57ca58960a0e7750d116645796652096-1024-1024.jpeg"
+  },
+  {
+    id: 3,
+    productName: "Camisa do Herobrine",
+    productType: "camisa",
+    productPrice: 456.33,
+    productNumber: 32,
+    productImage: "https://acdn-us.mitiendanube.com/stores/002/499/697/products/861-bd968d5ac7fe3915a516898772451723-1024-1024.jpg"
+  }];
+  
+  return(
+    <View style={StyleSheet.mainContainer}>
+      <ScrollView>
+        <View style={styles.listContainer}>
+          <Text style={styles.subtitle}>CARRINHO DE COMPRAS</Text>
           <FlatList
-            data={cartItems}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderItem}
-          />
-          <View style={styles.totalContainer}>
-            <Text style={styles.totalText}>Total: R$ {total.toFixed(2)}</Text>
-            <Button title="Finalizar Compra" onPress={() => alert('Pedido finalizado!')} />
-          </View>
-        </>
-      )}
+            data={products} 
+            horizontal={false}
+            keyExtractor={(item) => item.productName}
+            renderItem={({item}) => {
+              return <ProductShoppingCartCard 
+                product={{...item}}
+                onPress={() => console.log("")}/>
+            }}/>
+      
+        </View>
+
+
+
+
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  item: { flexDirection: 'row', marginVertical: 10 },
-  image: { width: 80, height: 80, borderRadius: 8 },
-  details: { flex: 1, marginLeft: 10 },
-  title: { fontWeight: 'bold', fontSize: 16 },
-  quantityRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 8 },
-  quantityButton: {
-    fontSize: 20,
-    paddingHorizontal: 10,
-    backgroundColor: '#ddd',
-    borderRadius: 5,
-  },
-  quantityText: { marginHorizontal: 10, fontSize: 16 },
-  totalContainer: { paddingVertical: 20, borderTopWidth: 1, borderColor: '#ccc' },
-  totalText: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
-  emptyText: { textAlign: 'center', marginTop: 50, fontSize: 18 },
+    mainContainer: {
+        padding: 10,
+    },
+    list: {
+        alignItems: 'center',
+    },
+    subtitle: {
+        fontSize: 20,
+        marginBottom: 10,
+        fontWeight: 500
+    },
+    listContainer: {
+      marginTop: 40,
+    }
+
 });
 
-export default CartScreen;

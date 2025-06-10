@@ -1,6 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "./screens/HomeScreen";
+import ShoppingCartScreen from "./screens/ShoppingCartScreen";
 
 export default function App() {
   
@@ -10,12 +10,8 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="HomeScreen"
-          options={{
-            headerBackTitle: "Personagens",
-            headerTitleAlign: "center",
-          }}
-          component={HomeScreen}
+          name="ShoppingCartScreen"
+          component={ShoppingCartScreen}
           >
         </Stack.Screen>
       </Stack.Navigator>

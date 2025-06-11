@@ -1,25 +1,63 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import CategoryScreen from "./screens/CategoriesScreen";
-import ProductDetailsScreen from "./screens/ProductDetailsScreen";
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import OrderScreen from './screens/OrderScreen';
+import NavigationBar from './components/NavigationBar';
+import SignInScreen from './screens/SignInScreen'
+import SignUpScreen from './screens/SignUpScreen'
+import ProductScreen from './screens/ProductScreen';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  
-  const Stack = createNativeStackNavigator();
-  
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="ProductDetailsScreen"
-          options={{
-            headerBackTitle: "Personagens",
-            headerTitleAlign: "center",
-          }}
-          component={ProductDetailsScreen}
-        >
-        </Stack.Screen>
+          <Stack.Screen
+            name="SignIN"
+            options={{
+              headerBackTitle: "Entrar",
+              headerTitleAlign: "center",
+            }}
+            component={SignInScreen}
+          ></Stack.Screen>
+
+          <Stack.Screen
+            name="SignUp"
+            options={{
+              headerBackTitle: "Cadastrar",
+              headerTitleAlign: "center",
+            }}
+            component={SignUpScreen}
+          ></Stack.Screen>
+
+          <Stack.Screen
+            name="MainTabs"
+            options={{
+              headerShown:false,
+            }}
+            component={NavigationBar}
+          ></Stack.Screen>
+          <Stack.Screen
+            name="OrderScreen"
+            options={{
+              headerBackTitle: "Pedidos",
+              headerTitleAlign: "center",
+            }}
+            component={OrderScreen}
+          ></Stack.Screen>
+
+           <Stack.Screen
+            name="ProductScreen"
+            options={{
+              headerBackTitle: "Produtos",
+              headerTitleAlign: "center",
+            }}
+            component={ProductScreen}
+          ></Stack.Screen> 
       </Stack.Navigator>
+
     </NavigationContainer>
+    
   );
 }

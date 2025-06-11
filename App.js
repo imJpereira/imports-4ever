@@ -5,6 +5,7 @@ import OrderScreen from './screens/OrderScreen';
 import NavigationBar from './components/NavigationBar';
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
+import ProductScreen from './screens/ProductScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,7 +14,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
           <Stack.Screen
-            name="SignIn"
+            name="SignIN"
             options={{
               headerBackTitle: "Entrar",
               headerTitleAlign: "center",
@@ -45,6 +46,15 @@ export default function App() {
             }}
             component={OrderScreen}
           ></Stack.Screen>
+
+           <Stack.Screen
+            name="ProductScreen"
+            options={{
+              headerBackTitle: "Produtos",
+              headerTitleAlign: "center",
+            }}
+            component={ProductScreen}
+          ></Stack.Screen> 
       </Stack.Navigator>
 
     </NavigationContainer>

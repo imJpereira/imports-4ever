@@ -1,7 +1,7 @@
 import { View,StyleSheet,FlatList } from "react-native";
 import ProductCard from "../components/ProductCard";
 
-export default function ProductScreen() {
+export default function ProductScreen({navigation}) {
 
     const products = [
         {
@@ -213,7 +213,7 @@ export default function ProductScreen() {
                 renderItem={({item}) => {
                     return <ProductCard
                             product={{...item}}
-                            onPress={() => console.log("")} 
+                            onPress={() => navigation.navigate("ProductDetails")} 
                             />
                 }}                
             />  

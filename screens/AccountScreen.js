@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
-import { Ionicons, Feather, MaterialIcons, AntDesign  } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  Alert,
+} from 'react-native';
+import {
+  Ionicons,
+  Feather,
+  MaterialIcons,
+  AntDesign,
+} from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 export default function AccountScreen() {
@@ -23,7 +36,6 @@ export default function AccountScreen() {
 
   return (
     <ScrollView style={styles.container}>
-
       <View style={styles.userInfo}>
         <Ionicons name="person-circle-outline" size={70} color="#999" />
         <View style={{ flex: 1, marginLeft: 15 }}>
@@ -71,11 +83,62 @@ export default function AccountScreen() {
         <Feather name="chevron-right" size={24} color="#06C823" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.option}>
+      <TouchableOpacity
+        style={styles.option}
+        onPress={() => navigation.navigate('AccountData')}
+      >
         <Feather name="user" size={24} color="#06C823" />
         <View style={styles.optionText}>
           <Text style={styles.optionTitle}>Dados Pessoais</Text>
           <Text style={styles.optionSubtitle}>Gerencie suas informações com segurança.</Text>
+        </View>
+        <Feather name="chevron-right" size={24} color="#06C823" />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.option}
+        onPress={() => navigation.navigate('ProductDetails')}
+      >
+        <MaterialIcons name="inventory" size={24} color="#06C823" />
+        <View style={styles.optionText}>
+          <Text style={styles.optionTitle}>Cadastro de Produto</Text>
+          <Text style={styles.optionSubtitle}>Adicione novos produtos ao sistema.</Text>
+        </View>
+        <Feather name="chevron-right" size={24} color="#06C823" />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.option}
+        onPress={() => navigation.navigate('CategoryCreate')}
+      >
+        <Feather name="tag" size={24} color="#06C823" />
+        <View style={styles.optionText}>
+          <Text style={styles.optionTitle}>Categoria</Text>
+          <Text style={styles.optionSubtitle}>Organize os produtos por categorias.</Text>
+        </View>
+        <Feather name="chevron-right" size={24} color="#06C823" />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.option}
+        onPress={() => navigation.navigate('TeamCreate')}
+      >
+        <Feather name="users" size={24} color="#06C823" />
+        <View style={styles.optionText}>
+          <Text style={styles.optionTitle}>Time</Text>
+          <Text style={styles.optionSubtitle}>Configure os times disponíveis no app.</Text>
+        </View>
+        <Feather name="chevron-right" size={24} color="#06C823" />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.option}
+        onPress={() => navigation.navigate('SportCreate')}
+      >
+        <MaterialIcons name="sports-soccer" size={24} color="#06C823" />
+        <View style={styles.optionText}>
+          <Text style={styles.optionTitle}>Esporte</Text>
+          <Text style={styles.optionSubtitle}>Gerencie os tipos de esportes cadastrados.</Text>
         </View>
         <Feather name="chevron-right" size={24} color="#06C823" />
       </TouchableOpacity>

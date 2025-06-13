@@ -5,6 +5,12 @@ import OrderScreen from './screens/OrderScreen';
 import NavigationBar from './components/NavigationBar';
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
+import AccountDataScreen  from './screens/AccountDataScreen';
+import CategorCreateScreen from './screens/CategoryCreateScreen';
+import ProductDetailsScreen from './screens/ProductDetailsScreen';
+import SportCreateScreen from './screens/SportCreateScreen';
+import TeamCreateScreen from './screens/TeamCreateScreen';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -44,7 +50,38 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={OrderScreen}
-          ></Stack.Screen>
+          ></Stack.Screen>           
+         
+          <Stack.Screen
+            name="AccountData"
+            component={AccountDataScreen}
+            options={{ title: 'Dados Pessoais', headerTitleAlign: 'center' }}
+          />
+
+          <Stack.Screen
+            name="CategoryCreate"
+            component={CategorCreateScreen}
+            options={{ title: 'Categoria', headerTitleAlign: 'center' }}
+          />
+
+          <Stack.Screen
+            name="ProductDetails"
+            component={ProductDetailsScreen}
+            options={{ title: 'Produto', headerTitleAlign: 'center' }}
+          />
+
+          <Stack.Screen
+            name="SportCreate"
+            component={SportCreateScreen}
+            options={{ title: 'Esporte', headerTitleAlign: 'center' }}
+          />
+
+          <Stack.Screen
+            name="TeamCreate"
+            component={TeamCreateScreen}
+            options={{ title: 'Time', headerTitleAlign: 'center' }}
+          />
+
       </Stack.Navigator>
 
     </NavigationContainer>

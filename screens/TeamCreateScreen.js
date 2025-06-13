@@ -59,6 +59,7 @@ export default function ProductScreen() {
   };
 
   const handleDelete = (index) => {
+    // Remove o produto direto, sem confirmação
     setProducts((prev) => {
       const updated = [...prev];
       updated.splice(index, 1);
@@ -134,55 +135,49 @@ export default function ProductScreen() {
           <ScrollView contentContainerStyle={styles.modalContent}>
             <Text style={styles.modalTitle}>{editingIndex !== null ? 'Editar Produto' : 'Novo Produto'}</Text>
 
-            <Text style={styles.label}>Nome do produto</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite o nome"
+              placeholder="Nome do produto"
               value={form.name}
               onChangeText={(text) => setForm({ ...form, name: text })}
             />
             {errors.name && <Text style={styles.error}>{errors.name}</Text>}
 
-            <Text style={styles.label}>Descrição</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite a descrição"
+              placeholder="Descrição"
               value={form.description}
               onChangeText={(text) => setForm({ ...form, description: text })}
               multiline
               numberOfLines={3}
             />
 
-            <Text style={styles.label}>Valor unitário</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite o valor"
+              placeholder="Valor unitário"
               keyboardType="numeric"
               value={form.value}
               onChangeText={(text) => setForm({ ...form, value: text })}
             />
             {errors.value && <Text style={styles.error}>{errors.value}</Text>}
 
-            <Text style={styles.label}>Time</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite o time"
+              placeholder="Time"
               value={form.team}
               onChangeText={(text) => setForm({ ...form, team: text })}
             />
 
-            <Text style={styles.label}>Categoria</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite a categoria"
+              placeholder="Categoria"
               value={form.category}
               onChangeText={(text) => setForm({ ...form, category: text })}
             />
 
-            <Text style={styles.label}>Esporte</Text>
             <TextInput
               style={styles.input}
-              placeholder="Digite o esporte"
+              placeholder="Esporte"
               value={form.sport}
               onChangeText={(text) => setForm({ ...form, sport: text })}
             />
@@ -239,7 +234,7 @@ const styles = StyleSheet.create({
 
   card: {
     borderRadius: 12,
-    padding: 16,    
+    padding: 12,
     marginBottom: 16,
     width: cardWidth,
     backgroundColor: '#f9f9f9',
@@ -249,7 +244,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-
   productImage: {
     width: 100,
     height: 100,
@@ -258,11 +252,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#cfcfcf',
   },
   productInfo: {
-    marginLeft: 12,  
     marginBottom: 12,
-    flex: 1,
   },
-  
   cardTitle: {
     fontWeight: 'bold',
     fontSize: 18,
@@ -326,14 +317,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlign: 'center',
   },
-
-  label: {
-    fontWeight: '600',
-    fontSize: 16,
-    marginBottom: 4,
-    color: '#333',
-  },
-
   input: {
     borderWidth: 1,
     borderColor: '#aaa',

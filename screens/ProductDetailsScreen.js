@@ -84,7 +84,10 @@ export default function ProductScreen() {
     <Animated.View
       entering={FadeInDown.duration(300)}
       exiting={FadeOutUp.duration(300)}
-      style={[styles.card, { backgroundColor: item.active ? '#e6ffe6' : '#f9f9f9' }]}
+      style={[
+        styles.card,
+        item.active ? styles.activeCard : styles.inactiveCard
+      ]}
     >
       <TouchableOpacity onPress={() => handleEdit(index)} style={{ flexDirection: 'row', flex: 1 }}>
         <Image source={{ uri: placeholderImage }} style={styles.productImage} />
@@ -242,13 +245,37 @@ const styles = StyleSheet.create({
     padding: 16,    
     marginBottom: 16,
     width: cardWidth,
-    backgroundColor: '#f9f9f9',
     shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 8,
     elevation: 6,
+    flexDirection: 'column',
   },
+
+  activeCard: {
+  backgroundColor: '#e6ffe6',
+  borderColor: '#06C823', 
+  borderWidth: 3,
+  shadowColor: '#06C823',
+  shadowOpacity: 0.3,
+  shadowOffset: { width: 0, height: 3 },
+  shadowRadius: 6,
+  elevation: 4,
+},
+
+
+  inactiveCard: {
+  backgroundColor: '#f9f9f9',
+  borderColor: '#999999',
+  borderWidth: 3,
+  shadowColor: '#D11A2A',
+  shadowOpacity: 0.3,
+  shadowOffset: { width: 0, height: 3 },
+  shadowRadius: 6,
+  elevation: 4,
+},
+
 
   productImage: {
     width: 100,
@@ -257,9 +284,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: '#cfcfcf',
   },
+
   productInfo: {
     marginLeft: 12,  
-    marginBottom: 12,
+    marginBottom: 8, 
     flex: 1,
   },
   

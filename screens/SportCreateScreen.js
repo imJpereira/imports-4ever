@@ -1,172 +1,216 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import React, { useState } from 'react'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native'
+import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
+import { colors, metrics, typography } from '../theme'
 
-export default function CategoriesScreen({ navigation }) {
-  const [formVisible, setFormVisible] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState({ nome: '' });
-  const [editingIndex, setEditingIndex] = useState(null);
+export default function SportCreateScreen({ navigation }) {
+  const [formVisible, setFormVisible] = useState(false)
+  const [sports, setSports] = useState([])
+  const [form, setForm] = useState({ nome: '' })
+  const [editingIndex, setEditingIndex] = useState(null)
 
-  const handleChange = (value) => setForm({ nome: value });
+  const handleChange = value => setForm({ nome: value })
 
   const handleSubmit = () => {
     if (!form.nome.trim()) {
-      Alert.alert('Erro', 'O nome do time não pode estar vazio.');
-      return;
+      Alert.alert('Erro', 'O nome do esporte não pode estar vazio.')
+      return
     }
-
     if (editingIndex !== null) {
-      const updated = [...categories];
-      updated[editingIndex] = form;
-      setCategories(updated);
+      const updated = [...sports]
+      updated[editingIndex] = form
+      setSports(updated)
     } else {
-      setCategories([...categories, form]);
+      setSports([...sports, form])
     }
+    setForm({ nome: '' })
+    setEditingIndex(null)
+    setFormVisible(false)
+  }
 
-    setForm({ nome: '' });
-    setEditingIndex(null);
-    setFormVisible(false);
-  };
+  const handleEdit = index => {
+    setForm(sports[index])
+    setEditingIndex(index)
+    setFormVisible(true)
+  }
 
-  const handleEdit = (index) => {
-    setForm(categories[index]);
-    setEditingIndex(index);
-    setFormVisible(true);
-  };
+  const handleDelete = index => {
+    const updated = sports.filter((_, i) => i !== index)
+    setSports(updated)
+  }
 
-  const handleDelete = (index) => {
-    const updated = categories.filter((_, i) => i !== index);
-    setCategories(updated);
-  };
+  const renderItem = ({ item, index }) => (
+    <Animated.View entering={FadeInDown} style={styles.card}>
+      <TouchableOpacity onPress={() => handleEdit(index)} style={styles.cardContent}>
+        <Text style={styles.cardTitle}>{item.nome}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(index)}>
+        <Text style={styles.deleteText}>EXCLUIR</Text>
+      </TouchableOpacity>
+    </Animated.View>
+  )
 
   return (
     <View style={styles.container}>
       {!formVisible && (
         <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.addCard}>
-          <Text style={styles.addText}>CADASTRE SEU ESPORTE AQUI</Text>
+          <Text style={styles.addText}>CADASTRE SEU ESPORTE</Text>
         </TouchableOpacity>
       )}
-
       {formVisible && (
-        <Animated.View
-          entering={FadeInDown.duration(300)}
-          exiting={FadeOutUp.duration(300)}
-          style={styles.formContainer}
-        >
+        <Animated.View entering={FadeInDown.duration(300)} exiting={FadeOutUp.duration(300)} style={styles.formContainer}>
           <TextInput
             placeholder="Nome do esporte"
             value={form.nome}
             onChangeText={handleChange}
             style={styles.input}
+            placeholderTextColor={colors.textPrimary}
           />
-
           <View style={styles.formButtons}>
             <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-              <Text style={styles.submitText}>CADASTRAR</Text>
+              <Text style={styles.submitText}>{editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelBtn} onPress={() => {
-              setForm({ nome: '' });
-              setFormVisible(false);
-              setEditingIndex(null);
-            }}>
+            <TouchableOpacity
+              style={styles.cancelBtn}
+              onPress={() => {
+                setForm({ nome: '' })
+                setFormVisible(false)
+                setEditingIndex(null)
+              }}
+            >
               <Text style={styles.cancelText}>CANCELAR</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
       )}
-
       <FlatList
-        data={categories}
+        data={sports}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <Animated.View entering={FadeInDown} style={styles.card}>
-            <TouchableOpacity onPress={() => handleEdit(index)} style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{item.nome}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(index)}>
-              <Text style={styles.cancelText}>EXCLUIR</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        )}
+        renderItem={renderItem}
+        contentContainerStyle={sports.length === 0 ? styles.emptyList : null}
       />
-
       {!formVisible && (
         <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.fab}>
           <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
       )}
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: {
+    flex: 1,
+    padding: metrics.spacing,
+    backgroundColor: colors.background
+  },
   addCard: {
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: '#06C823',
-    padding: 20,
+    borderColor: colors.primary,
+    padding: metrics.spacing,
     alignItems: 'center',
-    marginBottom: 16,
-    borderRadius: 12,
+    marginBottom: metrics.spacing,
+    borderRadius: metrics.borderRadius,
+    backgroundColor: colors.cardBackground
   },
-  addText: { color: '#06C823', fontWeight: 'bold' },
-  formContainer: { marginBottom: 16 },
+  addText: {
+    color: colors.primary,
+    fontWeight: typography.fontWeightBold,
+    fontSize: typography.fontSizeNormal
+  },
+  formContainer: {
+    marginBottom: metrics.spacing
+  },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
+    borderColor: colors.border,
+    borderRadius: metrics.borderRadius,
+    padding: metrics.spacing * 0.75,
+    marginBottom: metrics.spacing * 0.5,
+    backgroundColor: colors.inputBackground,
+    fontSize: typography.fontSizeNormal,
+    color: colors.textPrimary
   },
-  formButtons: { flexDirection: 'row', justifyContent: 'space-between' },
+  formButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
   submitBtn: {
-    backgroundColor: '#06C823',
-    padding: 12,
-    borderRadius: 8,
+    backgroundColor: colors.primary,
+    padding: metrics.spacing * 0.75,
+    borderRadius: metrics.borderRadius,
     flex: 1,
-    marginRight: 8,
-    alignItems: 'center',
+    marginRight: metrics.spacing * 0.5,
+    alignItems: 'center'
   },
-  submitText: { color: '#fff', fontWeight: 'bold' },
+  submitText: {
+    color: colors.textOnPrimary,
+    fontWeight: typography.fontWeightBold
+  },
   cancelBtn: {
-    backgroundColor: '#D11A2A',
-    padding: 12,
-    borderRadius: 8,
+    backgroundColor: colors.danger,
+    padding: metrics.spacing * 0.75,
+    borderRadius: metrics.borderRadius,
     flex: 1,
-    marginLeft: 8,
-    alignItems: 'center',
+    marginLeft: metrics.spacing * 0.5,
+    alignItems: 'center'
   },
-  cancelText: { color: 'white', fontWeight: 'bold' },
+  cancelText: {
+    color: colors.textOnPrimary,
+    fontWeight: typography.fontWeightBold
+  },
   card: {
-    backgroundColor: '#f2f2f2',
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: colors.cardBackground,
+    padding: metrics.spacing * 0.75,
+    borderRadius: metrics.borderRadius,
+    marginBottom: metrics.spacing * 0.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2
   },
   cardContent: {
-    paddingVertical: 10,
+    paddingVertical: metrics.spacing * 0.5
   },
-  cardTitle: { fontSize: 16, fontWeight: 'bold' },
+  cardTitle: {
+    fontSize: typography.fontSizeTitle,
+    fontWeight: typography.fontWeightBold,
+    textAlign: 'center',
+    color: colors.textPrimary
+  },
   deleteBtn: {
-    marginTop: 12,
-    backgroundColor: '#D11A2A',
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
+    marginTop: metrics.spacing * 0.5,
+    backgroundColor: colors.danger,
+    borderRadius: metrics.borderRadius,
+    paddingVertical: metrics.spacing * 0.5,
+    alignItems: 'center'
+  },
+  deleteText: {
+    color: colors.textOnPrimary,
+    fontWeight: typography.fontWeightBold
   },
   fab: {
     position: 'absolute',
-    right: 20,
-    bottom: 20,
-    backgroundColor: '#06C823',
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    right: metrics.spacing,
+    bottom: metrics.spacing,
+    backgroundColor: colors.primary,
+    width: metrics.fabSize,
+    height: metrics.fabSize,
+    borderRadius: metrics.fabSize / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
+    elevation: 4
   },
-  fabText: { color: 'white', fontSize: 24, fontWeight: 'bold' },
-});
+  fabText: {
+    color: colors.textOnPrimary,
+    fontSize: typography.fontSizeTitle,
+    fontWeight: typography.fontWeightBold
+  },
+  emptyList: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+})

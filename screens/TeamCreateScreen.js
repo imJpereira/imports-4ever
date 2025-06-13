@@ -1,375 +1,222 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Switch,
-  Image,
-  Modal,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import React, { useState } from 'react'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native'
+import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
+import { colors, metrics, typography } from '../theme'
 
-const placeholderImage = 'https://via.placeholder.com/150';
+export default function TeamCreateScreen({ navigation }) {
+  const [formVisible, setFormVisible] = useState(false)
+  const [teams, setTeams] = useState([])
+  const [form, setForm] = useState({ nome: '' })
+  const [editingIndex, setEditingIndex] = useState(null)
 
-export default function ProductScreen() {
-  const [products, setProducts] = useState([]);
-  const [formVisible, setFormVisible] = useState(false);
-  const [form, setForm] = useState({
-    name: '',
-    description: '',
-    value: '',
-    team: '',
-    category: '',
-    sport: '',
-    active: false,
-  });
-  const [errors, setErrors] = useState({});
-  const [editingIndex, setEditingIndex] = useState(null);
+  const handleChange = value => setForm({ nome: value })
 
-  const validate = () => {
-    const newErrors = {};
-    if (!form.name.trim()) newErrors.name = 'Nome obrigatório';
-    if (!form.value.trim() || isNaN(form.value)) newErrors.value = 'Valor inválido';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleAddOrUpdate = () => {
-    if (!validate()) return;
-    const updated = [...products];
-    if (editingIndex !== null) {
-      updated[editingIndex] = form;
-    } else {
-      updated.push(form);
+  const handleSubmit = () => {
+    if (!form.nome.trim()) {
+      Alert.alert('Erro', 'O nome do time não pode estar vazio.')
+      return
     }
-    setProducts(updated);
-    setFormVisible(false);
-    resetForm();
-  };
+    if (editingIndex !== null) {
+      const updated = [...teams]
+      updated[editingIndex] = form
+      setTeams(updated)
+    } else {
+      setTeams([...teams, form])
+    }
+    setForm({ nome: '' })
+    setEditingIndex(null)
+    setFormVisible(false)
+  }
 
-  const handleEdit = (index) => {
-    setEditingIndex(index);
-    setForm(products[index]);
-    setFormVisible(true);
-  };
+  const handleEdit = index => {
+    setForm(teams[index])
+    setEditingIndex(index)
+    setFormVisible(true)
+  }
 
-  const handleDelete = (index) => {
-    // Remove o produto direto, sem confirmação
-    setProducts((prev) => {
-      const updated = [...prev];
-      updated.splice(index, 1);
-      return updated;
-    });
-  };
+  const handleDelete = index => {
+    const updated = teams.filter((_, i) => i !== index)
+    setTeams(updated)
+  }
 
-  const resetForm = () => {
-    setForm({
-      name: '',
-      description: '',
-      value: '',
-      team: '',
-      category: '',
-      sport: '',
-      active: false,
-    });
-    setEditingIndex(null);
-    setErrors({});
-  };
-
-  const renderProductCard = ({ item, index }) => (
-    <Animated.View
-      entering={FadeInDown.duration(300)}
-      exiting={FadeOutUp.duration(300)}
-      style={[styles.card, { backgroundColor: item.active ? '#e6ffe6' : '#f9f9f9' }]}
-    >
-      <TouchableOpacity onPress={() => handleEdit(index)} style={{ flexDirection: 'row', flex: 1 }}>
-        <Image source={{ uri: placeholderImage }} style={styles.productImage} />
-        <View style={styles.productInfo}>
-          <Text style={styles.cardTitle}>{item.name}</Text>
-          <Text style={styles.description} numberOfLines={2}>{item.description || 'Sem descrição'}</Text>
-          <Text style={styles.price}>R$ {Number(item.value).toFixed(2)}</Text>
-
-          <View style={styles.tagsRow}>
-            {item.team ? <Text style={styles.tag}>{item.team}</Text> : null}
-            {item.category ? <Text style={styles.tag}>{item.category}</Text> : null}
-            {item.sport ? <Text style={styles.tag}>{item.sport}</Text> : null}
-          </View>
-
-          <Text style={{ marginTop: 4, color: item.active ? '#06C823' : '#999' }}>
-            {item.active ? 'Ativo' : 'Inativo'}
-          </Text>
-        </View>
+  const renderItem = ({ item, index }) => (
+    <Animated.View entering={FadeInDown} style={styles.card}>
+      <TouchableOpacity onPress={() => handleEdit(index)} style={styles.cardContent}>
+        <Text style={styles.cardTitle}>{item.nome}</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => handleDelete(index)} style={styles.deleteBtn}>
-        <Text style={styles.deleteBtnText}>EXCLUIR</Text>
+      <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(index)}>
+        <Text style={styles.deleteText}>EXCLUIR</Text>
       </TouchableOpacity>
     </Animated.View>
-  );
+  )
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.addButton} onPress={() => setFormVisible(true)}>
-        <Text style={styles.addButtonText}>+ ADICIONAR UM ITEM</Text>
-      </TouchableOpacity>
-
+      {!formVisible && (
+        <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.addCard}>
+          <Text style={styles.addText}>CADASTRE SEU TIME</Text>
+        </TouchableOpacity>
+      )}
+      {formVisible && (
+        <Animated.View
+          entering={FadeInDown.duration(300)}
+          exiting={FadeOutUp.duration(300)}
+          style={styles.formContainer}
+        >
+          <TextInput
+            placeholder="Nome do time"
+            placeholderTextColor={colors.textPrimary}
+            value={form.nome}
+            onChangeText={handleChange}
+            style={styles.input}
+          />
+          <View style={styles.formButtons}>
+            <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
+              <Text style={styles.submitText}>
+                {editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.cancelBtn}
+              onPress={() => {
+                setForm({ nome: '' })
+                setFormVisible(false)
+                setEditingIndex(null)
+              }}
+            >
+              <Text style={styles.cancelText}>CANCELAR</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      )}
       <FlatList
-        data={products}
+        data={teams}
         keyExtractor={(_, index) => index.toString()}
-        renderItem={renderProductCard}
-        contentContainerStyle={{ paddingBottom: 120 }}
+        renderItem={renderItem}
+        contentContainerStyle={teams.length === 0 ? styles.emptyList : null}
       />
-
-      <Modal
-        visible={formVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => { setFormVisible(false); resetForm(); }}
-      >
-        <View style={styles.modalOverlay}>
-          <ScrollView contentContainerStyle={styles.modalContent}>
-            <Text style={styles.modalTitle}>{editingIndex !== null ? 'Editar Produto' : 'Novo Produto'}</Text>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Nome do produto"
-              value={form.name}
-              onChangeText={(text) => setForm({ ...form, name: text })}
-            />
-            {errors.name && <Text style={styles.error}>{errors.name}</Text>}
-
-            <TextInput
-              style={styles.input}
-              placeholder="Descrição"
-              value={form.description}
-              onChangeText={(text) => setForm({ ...form, description: text })}
-              multiline
-              numberOfLines={3}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Valor unitário"
-              keyboardType="numeric"
-              value={form.value}
-              onChangeText={(text) => setForm({ ...form, value: text })}
-            />
-            {errors.value && <Text style={styles.error}>{errors.value}</Text>}
-
-            <TextInput
-              style={styles.input}
-              placeholder="Time"
-              value={form.team}
-              onChangeText={(text) => setForm({ ...form, team: text })}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Categoria"
-              value={form.category}
-              onChangeText={(text) => setForm({ ...form, category: text })}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Esporte"
-              value={form.sport}
-              onChangeText={(text) => setForm({ ...form, sport: text })}
-            />
-
-            <View style={styles.switchRow}>
-              <Text style={styles.switchLabel}>Ativo</Text>
-              <Switch
-                value={form.active}
-                onValueChange={(value) => setForm({ ...form, active: value })}
-                thumbColor="#06C823"
-              />
-            </View>
-
-            <View style={styles.buttonRow}>
-              <TouchableOpacity onPress={handleAddOrUpdate} style={styles.confirmButton}>
-                <Text style={styles.confirmButtonText}>{editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setFormVisible(false);
-                  resetForm();
-                }}
-                style={styles.cancelButton}
-              >
-                <Text style={styles.cancelButtonText}>CANCELAR</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
-      </Modal>
+      {!formVisible && (
+        <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.fab}>
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      )}
     </View>
-  );
+  )
 }
 
-const { width } = Dimensions.get('window');
-const cardWidth = width - 32;
-
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-
-  addButton: {
-    backgroundColor: '#06C823',
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginBottom: 12,
-    elevation: 4,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-
-  card: {
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-    width: cardWidth,
-    backgroundColor: '#f9f9f9',
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  productImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
-    marginBottom: 8,
-    backgroundColor: '#cfcfcf',
-  },
-  productInfo: {
-    marginBottom: 12,
-  },
-  cardTitle: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 4,
-    color: '#333',
-  },
-  description: {
-    color: '#555',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  price: {
-    fontWeight: 'bold',
-    color: '#06C823',
-    fontSize: 16,
-    marginBottom: 6,
-  },
-  tagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 6,
-  },
-  tag: {
-    backgroundColor: '#06C823',
-    color: '#fff',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-    marginRight: 8,
-    marginTop: 4,
-    fontSize: 12,
-  },
-
-  deleteBtn: {
-    backgroundColor: '#D11A2A',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-    marginTop: 6,
-  },
-  deleteBtnText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-
-  modalOverlay: {
+  container: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
+    padding: metrics.spacing,
+    backgroundColor: colors.background,
   },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    paddingBottom: 40,
+  addCard: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.primary,
+    padding: metrics.spacing,
+    alignItems: 'center',
+    marginBottom: metrics.spacing,
+    borderRadius: metrics.borderRadius,
+    backgroundColor: colors.cardBackground,
   },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
+  addText: {
+    color: colors.primary,
+    fontWeight: typography.fontWeightBold,
+    fontSize: typography.fontSizeNormal,
+  },
+  formContainer: {
+    marginBottom: metrics.spacing,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#aaa',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 10,
-    fontSize: 16,
+    borderColor: colors.border,
+    borderRadius: metrics.borderRadius,
+    padding: metrics.spacing * 0.75,
+    marginBottom: metrics.spacing * 0.5,
+    backgroundColor: colors.inputBackground,
+    fontSize: typography.fontSizeNormal,
+    color: colors.textPrimary,
   },
-  error: {
-    color: 'red',
-    marginBottom: 6,
-  },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-    justifyContent: 'space-between',
-  },
-  switchLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#444',
-  },
-
-  buttonRow: {
+  formButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  confirmButton: {
-    backgroundColor: '#06C823',
+  submitBtn: {
+    backgroundColor: colors.primary,
+    padding: metrics.spacing * 0.75,
+    borderRadius: metrics.borderRadius,
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 30,
+    marginRight: metrics.spacing * 0.5,
     alignItems: 'center',
-    marginRight: 8,
   },
-  confirmButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+  submitText: {
+    color: colors.textOnPrimary,
+    fontWeight: typography.fontWeightBold,
   },
-  cancelButton: {
-    backgroundColor: '#aaa',
+  cancelBtn: {
+    backgroundColor: colors.danger,
+    padding: metrics.spacing * 0.75,
+    borderRadius: metrics.borderRadius,
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 30,
+    marginLeft: metrics.spacing * 0.5,
     alignItems: 'center',
-    marginLeft: 8,
   },
-  cancelButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+  cancelText: {
+    color: colors.textOnPrimary,
+    fontWeight: typography.fontWeightBold,
   },
-});
+  card: {
+    backgroundColor: colors.cardBackground,
+    padding: metrics.spacing * 0.75,
+    borderRadius: metrics.borderRadius,
+    marginBottom: metrics.spacing * 0.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  cardContent: {
+    paddingVertical: metrics.spacing * 0.5,
+  },
+  cardTitle: {
+    fontSize: typography.fontSizeTitle,
+    fontWeight: typography.fontWeightBold,
+    textAlign: 'center',
+    color: colors.textPrimary,
+  },
+  deleteBtn: {
+    marginTop: metrics.spacing * 0.5,
+    backgroundColor: colors.danger,
+    borderRadius: metrics.borderRadius,
+    paddingVertical: metrics.spacing * 0.5,
+    alignItems: 'center',
+  },
+  deleteText: {
+    color: colors.textOnPrimary,
+    fontWeight: typography.fontWeightBold,
+  },
+  fab: {
+    position: 'absolute',
+    right: metrics.spacing,
+    bottom: metrics.spacing,
+    backgroundColor: colors.primary,
+    width: metrics.fabSize,
+    height: metrics.fabSize,
+    borderRadius: metrics.fabSize / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+  },
+  fabText: {
+    color: colors.textOnPrimary,
+    fontSize: typography.fontSizeTitle,
+    fontWeight: typography.fontWeightBold,
+  },
+  emptyList: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+})

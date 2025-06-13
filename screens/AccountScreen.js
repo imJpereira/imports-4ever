@@ -113,7 +113,7 @@ export default function AccountScreen() {
       >
         <Feather name="tag" size={24} color="#06C823" />
         <View style={styles.optionText}>
-          <Text style={styles.optionTitle}>Categoria</Text>
+          <Text style={styles.optionTitle}>Cadastro de Categoria</Text>
           <Text style={styles.optionSubtitle}>Organize os produtos por categorias.</Text>
         </View>
         <Feather name="chevron-right" size={24} color="#06C823" />
@@ -125,7 +125,7 @@ export default function AccountScreen() {
       >
         <Feather name="users" size={24} color="#06C823" />
         <View style={styles.optionText}>
-          <Text style={styles.optionTitle}>Time</Text>
+          <Text style={styles.optionTitle}>Cadastro de Times</Text>
           <Text style={styles.optionSubtitle}>Configure os times disponíveis no app.</Text>
         </View>
         <Feather name="chevron-right" size={24} color="#06C823" />
@@ -137,7 +137,7 @@ export default function AccountScreen() {
       >
         <MaterialIcons name="sports-soccer" size={24} color="#06C823" />
         <View style={styles.optionText}>
-          <Text style={styles.optionTitle}>Esporte</Text>
+          <Text style={styles.optionTitle}>Cadastro de Esportes</Text>
           <Text style={styles.optionSubtitle}>Gerencie os tipos de esportes cadastrados.</Text>
         </View>
         <Feather name="chevron-right" size={24} color="#06C823" />

@@ -6,7 +6,8 @@ export const colors = {
   textPrimary: '#333333',
   textOnPrimary: '#FFFFFF',
   inputBackground: '#F9F9F9',
-  border: '#BBBBBB'
+  border: '#BBBBBB',
+  
 };
 
 export const metrics = {

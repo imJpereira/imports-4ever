@@ -1,12 +1,7 @@
-import { View, FlatList, StyleSheet, Text, ScrollView } from "react-native";
+import { View,StyleSheet,FlatList } from "react-native";
 import ProductCard from "../components/ProductCard";
-import MiniProductType from "../components/MiniProductType";
-import MiniSportCard from "../components/MIniSportCard";
-import SearchBar from "../components/SearchBar";
-import { useState } from "react";
 
-
-export default function HomeScreen({navigation}) {
+export default function ProductScreen({navigation}) {
 
     const products = [
         {
@@ -209,135 +204,20 @@ export default function HomeScreen({navigation}) {
         // }
       ];
 
-    const types = [
-      {
-        id: 1,
-        name: "Camisetas",
-        url: "adwada",
-      },
-      {
-        id: 2,
-        name: "Jerseys",
-        url: "wdawdadad",
-      },
-      {
-        id: 3,
-        name: "Tênis",
-        url: "wdawdadad",
-      },
-      {
-        id: 4,
-        name: "Moletons",
-        url: "wdawdadad",
-      },
-    ]
-
-    const sports = [
-      {
-        id:1,
-        name: "Futebol",
-        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTi265r_m06jfKFVfeFfl-Uh-QefekUUfMBhw&s"
-      },
-      {
-        id:2,
-        name: "Basquete",
-        url: "https://imageio.forbes.com/specials-images/imageserve/63a269a972a478f92cc9d405/From-Getty--Ja-Morant--12-of-the-Memphis-Grizzlies-looks-on-against-the-Minnesota/0x0.jpg?format=jpg&width=960"
-      },
-      {
-        id:3,
-        name: "Futebol Americano",
-        url: "https://i.guim.co.uk/img/media/6e53c57c9faf11bd8e373956b0a9407b65321bd5/0_95_2193_1315/master/2193.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=dade40f44c419742c8714bcf2c034f58"
-      },
-      {
-        id:4,
-        name: "Hóquei",
-        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Connor_McDavid_2-FEB-2022.jpg/1200px-Connor_McDavid_2-FEB-2022.jpg"
-      },
-    ]
-      
-
-    const [searchText, setSearchText] = useState("");
-
-    return(
-        <View style={styles.mainContainer}>
-          <ScrollView>
-            <SearchBar 
-              value={searchText} 
-              onChangeText={setSearchText}
-              onSearch={() => navigation.navigate('ProductScreen') }
-              />
-
-            <View style={styles.listContainer}>
-              <Text style={styles.subtitle}>MAIS VISTOS</Text>
-              <FlatList 
-                  data={products}
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={(item) => item.name}
-                  renderItem={({item}) => {
-                      return <ProductCard
-                              product={{...item}}
-                              onPress={() => console.log("")} 
-                              />
-                  }}
-                  contentContainerStyle={styles.list}                
-              />  
-            </View>      
-
-            <View style={styles.listContainer}>
-              <Text style={styles.subtitle}>CATEGORIAS</Text>
-              <FlatList 
-                  data={types}
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={(item) => item.id}
-                  renderItem={({item}) => {
-                      return <MiniProductType
-                              type={{...item}}
-                              onPress={() => console.log("")} 
-                              />
-                  }}
-                  contentContainerStyle={styles.list}                
-              />  
-            </View>
-
-            <View style={styles.listContainer}>
-              <Text style={styles.subtitle}>BUSQUE POR ESPORTE </Text>
-              <FlatList 
-                  data={sports}
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                  keyExtractor={(item) => item.name}
-                  renderItem={({item}) => {
-                      return <MiniSportCard
-                              sport={{...item}}
-                              onPress={() => console.log("")} 
-                              />
-                  }}
-                  contentContainerStyle={styles.list}                
-              />  
-            </View>
-          
-          </ScrollView>                 
+    return (
+        <View>
+            <FlatList 
+                data={products}
+                numColumns={2}
+                keyExtractor={(item) => item.name}
+                renderItem={({item}) => {
+                    return <ProductCard
+                            product={{...item}}
+                            onPress={() => navigation.navigate("ProductDetails")} 
+                            />
+                }}                
+            />  
         </View>
     );
 }
 
-const styles = StyleSheet.create({
-
-    mainContainer: {
-        padding: 10,
-    },
-    list: {
-        alignItems: 'center',
-    },
-    subtitle: {
-        fontSize: 20,
-        marginBottom: 10,
-        fontWeight: 500
-    },
-    listContainer: {
-      marginTop: 40,
-    }
-
-});

@@ -6,7 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import OrderScreen from './screens/OrderScreen';
 import NavigationBar from './components/NavigationBar';
 import SignInScreen from './screens/SignInScreen'
-import SignUpScreen from './screens/SignUpScreen'
+import SignUpScreen from './screens/SignUpScreen
 import ProductScreen from './screens/ProductScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
 
@@ -50,6 +50,7 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={OrderScreen}
+
           ></Stack.Screen>
 
            <Stack.Screen

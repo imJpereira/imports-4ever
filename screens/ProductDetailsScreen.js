@@ -2,419 +2,213 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
-  FlatList,
-  Switch,
   Image,
-  Modal,
   ScrollView,
-  Dimensions,
+  TouchableOpacity,
+  TextInput,
 } from 'react-native';
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
 
-const placeholderImage = 'https://via.placeholder.com/150';
+export default function CamisaDoBrasilScreen() {
+  const [selectedSize, setSelectedSize] = useState(null);
 
-export default function ProductScreen() {
-  const [products, setProducts] = useState([]);
-  const [formVisible, setFormVisible] = useState(false);
-  const [form, setForm] = useState({
-    name: '',
-    description: '',
-    value: '',
-    team: '',
-    category: '',
-    sport: '',
-    active: false,
-  });
-  const [errors, setErrors] = useState({});
-  const [editingIndex, setEditingIndex] = useState(null);
-
-  const validate = () => {
-    const newErrors = {};
-    if (!form.name.trim()) newErrors.name = 'Nome obrigatório';
-    if (!form.value.trim() || isNaN(form.value)) newErrors.value = 'Valor inválido';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const product = {
+    name: "Camisa oficial da seleção brasileira 2024",
+    description: "Camisa oficial da seleção brasileira 2024",
+    review: 4.5,
+    price: 199.90,
+    discount: 20,
+    finalPrice: 159.92,
+    category: "Futebol",
+    brand: "Nike",
+    stock: 25,
+    image: "https://acdn-us.mitiendanube.com/stores/001/055/309/products/376fad4f1-57ca58960a0e7750d116645796652096-1024-1024.jpeg",
+    tags: ["camisa", "seleção", "brasil"]
   };
 
-  const handleAddOrUpdate = () => {
-    if (!validate()) return;
-    const updated = [...products];
-    if (editingIndex !== null) {
-      updated[editingIndex] = form;
-    } else {
-      updated.push(form);
-    }
-    setProducts(updated);
-    setFormVisible(false);
-    resetForm();
-  };
-
-  const handleEdit = (index) => {
-    setEditingIndex(index);
-    setForm(products[index]);
-    setFormVisible(true);
-  };
-
-  const handleDelete = (index) => {
-    setProducts((prev) => {
-      const updated = [...prev];
-      updated.splice(index, 1);
-      return updated;
-    });
-  };
-
-  const resetForm = () => {
-    setForm({
-      name: '',
-      description: '',
-      value: '',
-      team: '',
-      category: '',
-      sport: '',
-      active: false,
-    });
-    setEditingIndex(null);
-    setErrors({});
-  };
-
-  const renderProductCard = ({ item, index }) => (
-    <Animated.View
-      entering={FadeInDown.duration(300)}
-      exiting={FadeOutUp.duration(300)}
-      style={[
-        styles.card,
-        item.active ? styles.activeCard : styles.inactiveCard
-      ]}
-    >
-      <TouchableOpacity onPress={() => handleEdit(index)} style={{ flexDirection: 'row', flex: 1 }}>
-        <Image source={{ uri: placeholderImage }} style={styles.productImage} />
-        <View style={styles.productInfo}>
-          <Text style={styles.cardTitle}>{item.name}</Text>
-          <Text style={styles.description} numberOfLines={2}>{item.description || 'Sem descrição'}</Text>
-          <Text style={styles.price}>R$ {Number(item.value).toFixed(2)}</Text>
-
-          <View style={styles.tagsRow}>
-            {item.team ? <Text style={styles.tag}>{item.team}</Text> : null}
-            {item.category ? <Text style={styles.tag}>{item.category}</Text> : null}
-            {item.sport ? <Text style={styles.tag}>{item.sport}</Text> : null}
-          </View>
-
-          <Text style={{ marginTop: 4, color: item.active ? '#06C823' : '#999' }}>
-            {item.active ? 'Ativo' : 'Inativo'}
-          </Text>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => handleDelete(index)} style={styles.deleteBtn}>
-        <Text style={styles.deleteBtnText}>EXCLUIR</Text>
-      </TouchableOpacity>
-    </Animated.View>
-  );
+  const sizes = ['P', 'M', 'G', 'GG', 'XG'];
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.addButton} onPress={() => setFormVisible(true)}>
-        <Text style={styles.addButtonText}>+ ADICIONAR UM ITEM</Text>
-      </TouchableOpacity>
+    <ScrollView style={styles.container}>
+      <View style={styles.card}>
+        <Image source={{ uri: product.image }} style={styles.productImage} />
 
-      <FlatList
-        data={products}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={renderProductCard}
-        contentContainerStyle={{ paddingBottom: 120 }}
-      />
+        <Text style={styles.name}>{product.name}</Text>
+        <Text style={styles.brand}>Marca: {product.brand}</Text>
 
-      <Modal
-        visible={formVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => { setFormVisible(false); resetForm(); }}
-      >
-        <View style={styles.modalOverlay}>
-          <ScrollView contentContainerStyle={styles.modalContent}>
-            <Text style={styles.modalTitle}>{editingIndex !== null ? 'Editar Produto' : 'Novo Produto'}</Text>
+        
 
-            <Text style={styles.label}>Nome do produto</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite o nome"
-              value={form.name}
-              onChangeText={(text) => setForm({ ...form, name: text })}
-            />
-            {errors.name && <Text style={styles.error}>{errors.name}</Text>}
-
-            <Text style={styles.label}>Descrição</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite a descrição"
-              value={form.description}
-              onChangeText={(text) => setForm({ ...form, description: text })}
-              multiline
-              numberOfLines={3}
-            />
-
-            <Text style={styles.label}>Valor unitário</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite o valor"
-              keyboardType="numeric"
-              value={form.value}
-              onChangeText={(text) => setForm({ ...form, value: text })}
-            />
-            {errors.value && <Text style={styles.error}>{errors.value}</Text>}
-
-            <Text style={styles.label}>Time</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite o time"
-              value={form.team}
-              onChangeText={(text) => setForm({ ...form, team: text })}
-            />
-
-            <Text style={styles.label}>Categoria</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite a categoria"
-              value={form.category}
-              onChangeText={(text) => setForm({ ...form, category: text })}
-            />
-
-            <Text style={styles.label}>Esporte</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite o esporte"
-              value={form.sport}
-              onChangeText={(text) => setForm({ ...form, sport: text })}
-            />
-
-            <View style={styles.switchRow}>
-              <Text style={styles.switchLabel}>Ativo</Text>
-              <Switch
-                value={form.active}
-                onValueChange={(value) => setForm({ ...form, active: value })}
-                thumbColor="#06C823"
-              />
-            </View>
-
-            <View style={styles.buttonRow}>
-              <TouchableOpacity onPress={handleAddOrUpdate} style={styles.confirmButton}>
-                <Text style={styles.confirmButtonText}>{editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setFormVisible(false);
-                  resetForm();
-                }}
-                style={styles.cancelButton}
-              >
-                <Text style={styles.cancelButtonText}>CANCELAR</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
+        <View style={styles.priceBox}>
+          <Text style={styles.finalPrice}>R$ {product.finalPrice.toFixed(2)}</Text>
+          <Text style={styles.oldPrice}>R$ {product.price.toFixed(2)}</Text>
+          <Text style={styles.discount}>{product.discount}% off</Text>
         </View>
-      </Modal>
-    </View>
+
+        
+
+        <Text style={styles.sectionTitle}>Tamanhos disponíveis</Text>
+        <View style={styles.sizeContainer}>
+          {sizes.map(size => (
+            <TouchableOpacity
+              key={size}
+              style={[
+                styles.sizeButton,
+                selectedSize === size && styles.sizeButtonSelected,
+              ]}
+              onPress={() => setSelectedSize(size)}
+            >
+              <Text
+                style={[
+                  styles.sizeText,
+                  selectedSize === size && styles.sizeTextSelected,
+                ]}
+              >
+                {size}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={styles.sectionTitle}>Calcular frete</Text>
+        <View style={styles.cepContainer}>
+          <TextInput placeholder="Digite o CEP" style={styles.cepInput} />
+          <TouchableOpacity style={styles.cepButton}>
+            <Text style={styles.cepButtonText}>Calcular</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.addToCartButton}>
+          <Text style={styles.addToCartText}>Adicionar ao carrinho</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 }
 
-const { width } = Dimensions.get('window');
-const cardWidth = width - 32;
-
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-
-  addButton: {
-    backgroundColor: '#06C823',
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginBottom: 12,
-    elevation: 4,
+  container: {
+    backgroundColor: '#f0f0f0',
+    flex: 1,
   },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-
   card: {
+    margin: 16,
     borderRadius: 12,
-    padding: 16,    
-    marginBottom: 16,
-    width: cardWidth,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 8,
-    elevation: 6,
-    flexDirection: 'column',
-  },
-
-  activeCard: {
-  backgroundColor: '#e6ffe6',
-  borderColor: '#06C823', 
-  borderWidth: 3,
-  shadowColor: '#06C823',
-  shadowOpacity: 0.3,
-  shadowOffset: { width: 0, height: 3 },
-  shadowRadius: 6,
-  elevation: 4,
-},
-
-
-  inactiveCard: {
-  backgroundColor: '#f9f9f9',
-  borderColor: '#999999',
-  borderWidth: 3,
-  shadowColor: '#D11A2A',
-  shadowOpacity: 0.3,
-  shadowOffset: { width: 0, height: 3 },
-  shadowRadius: 6,
-  elevation: 4,
-},
-
-
-  productImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
-    marginBottom: 8,
-    backgroundColor: '#cfcfcf',
-  },
-
-  productInfo: {
-    marginLeft: 12,  
-    marginBottom: 8, 
-    flex: 1,
-  },
-  
-  cardTitle: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 4,
-    color: '#333',
-  },
-  description: {
-    color: '#555',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  price: {
-    fontWeight: 'bold',
-    color: '#06C823',
-    fontSize: 16,
-    marginBottom: 6,
-  },
-  tagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 6,
-  },
-  tag: {
-    backgroundColor: '#06C823',
-    color: '#fff',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-    marginRight: 8,
-    marginTop: 4,
-    fontSize: 12,
-  },
-
-  deleteBtn: {
-    backgroundColor: '#D11A2A',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-    marginTop: 6,
-  },
-  deleteBtnText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  modalContent: {
     backgroundColor: '#fff',
-    borderRadius: 16,
     padding: 20,
-    paddingBottom: 40,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
   },
-  modalTitle: {
+  productImage: {
+    width: '100%',
+    height: 300,
+    resizeMode: 'contain',
+    marginBottom: 16,
+  },
+  name: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-
-  label: {
-    fontWeight: '600',
-    fontSize: 16,
     marginBottom: 4,
-    color: '#333',
   },
-
-  input: {
-    borderWidth: 1,
-    borderColor: '#aaa',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 10,
-    fontSize: 16,
+  brand: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 8,
   },
-  error: {
-    color: 'red',
+  review: {
+    fontSize: 14,
+    color: '#777',
+    marginBottom: 12,
+  },
+  priceBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     marginBottom: 6,
   },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-    justifyContent: 'space-between',
+  finalPrice: {
+    fontSize: 20,
+    color: 'green',
+    fontWeight: 'bold',
   },
-  switchLabel: {
+  oldPrice: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#444',
+    color: '#aaa',
+    textDecorationLine: 'line-through',
   },
-
-  buttonRow: {
+  discount: {
+    fontSize: 14,
+    color: 'red',
+  },
+  pix: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  sizeContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 10,
   },
-  confirmButton: {
-    backgroundColor: '#06C823',
+  sizeButton: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  sizeButtonSelected: {
+    backgroundColor: '#eaffea',
+    borderColor: 'green',
+  },
+  sizeText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  sizeTextSelected: {
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  cepContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  cepInput: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 10,
   },
-  confirmButtonText: {
+  cepButton: {
+    backgroundColor: 'green',
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+    borderRadius: 6,
+  },
+  cepButtonText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 16,
   },
-  cancelButton: {
-    backgroundColor: '#aaa',
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 30,
+  addToCartButton: {
+    backgroundColor: 'green',
+    padding: 16,
+    borderRadius: 8,
     alignItems: 'center',
-    marginLeft: 8,
+    marginTop: 12,
   },
-  cancelButtonText: {
+  addToCartText: {
     color: '#fff',
-    fontWeight: 'bold',
     fontSize: 16,
+    fontWeight: 'bold',
   },
 });

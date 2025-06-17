@@ -97,7 +97,7 @@ export default function AccountScreen() {
 
       <TouchableOpacity
         style={styles.option}
-        onPress={() => navigation.navigate('ProductDetails')}
+        onPress={() => navigation.navigate('CreateProduct')}
       >
         <MaterialIcons name="inventory" size={24} color="#06C823" />
         <View style={styles.optionText}>

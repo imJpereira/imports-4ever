@@ -14,6 +14,7 @@ import TeamCreateScreen from './screens/TeamCreateScreen';
 import SportCreateScreen from "./screens/SportCreateScreen";
 import CategoryCreateScreen from "./screens/CategoryCreateScreen";
 import AccountDataScreen from "./screens/AccountDataScreen";
+import CreateProduct from "./screens/CreateProduct"
 
 const Stack = createNativeStackNavigator();
 
@@ -128,6 +129,15 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={AccountDataScreen}
+          ></Stack.Screen>
+
+          <Stack.Screen
+            name="CreateProduct"
+            options={{
+              headerBackTitle: "Cadastro de Produtos",
+              headerTitleAlign: "center",
+            }}
+            component={CreateProduct}
           ></Stack.Screen>
 
       </Stack.Navigator>

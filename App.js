@@ -1,5 +1,3 @@
-
-import ShoppingCartScreen from "./screens/ShoppingCartScreen";
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -18,10 +16,10 @@ import CreateProduct from "./screens/CreateProduct"
 
 const Stack = createNativeStackNavigator();
 
-
 export default function App() {
   return (
     <NavigationContainer>
+    <ShoppingCartProvider>
 
     <Stack.Navigator>
           <Stack.Screen
@@ -31,7 +29,7 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={SignInScreen}
-          ></Stack.Screen>
+            ></Stack.Screen>
 
           <Stack.Screen
             name="SignUp"
@@ -48,7 +46,7 @@ export default function App() {
               headerShown:false,
             }}
             component={NavigationBar}
-          ></Stack.Screen>
+            ></Stack.Screen>
           <Stack.Screen
             name="OrderScreen"
             options={{
@@ -56,7 +54,6 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={OrderScreen}
-
           ></Stack.Screen>
 
            <Stack.Screen
@@ -66,8 +63,9 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={ProductScreen}
-          ></Stack.Screen> 
+            ></Stack.Screen> 
 
+          
            <Stack.Screen
             name="ProductDetails"
             options={{
@@ -142,6 +140,7 @@ export default function App() {
 
       </Stack.Navigator>
 
+    </ShoppingCartProvider>
     </NavigationContainer>
     
   );

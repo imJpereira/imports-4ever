@@ -1,5 +1,3 @@
-
-import ShoppingCartScreen from "./screens/ShoppingCartScreen";
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,6 +7,7 @@ import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
 import ProductScreen from './screens/ProductScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
+import ShoppingCartScreen from "./screens/ShoppingCartScreen";
 
 const Stack = createNativeStackNavigator();
 

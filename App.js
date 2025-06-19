@@ -1,4 +1,3 @@
-
 import { StatusBar } from "expo-status-bar";
 import AuthProvider from "./context/AuthContext";
 import Routes from "./routes/routes";

@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen";
 import AccountScreen from "../screens/AccountScreen";
 import { Ionicons } from "@expo/vector-icons";
+import ShoppingCartScreen from "../screens/ShoppingCartScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -15,6 +16,8 @@ export default function NavigationBar() {
       
                 if (route.name === 'Início') {
                   iconName = focused ? 'home' : 'home-outline';
+                } else if (route.name === 'Carrinho') {
+                  iconName = focused ? 'cart' : 'cart-outline';
                 } else if (route.name === 'Perfil') {
                   iconName = focused ? 'person' : 'person-outline';
                 }
@@ -34,6 +37,14 @@ export default function NavigationBar() {
               component={HomeScreen}
             ></Tab.Screen>
       
+            <Tab.Screen
+              name="Carrinho"
+              options={{
+                headerTitleAlign: 'center'
+              }}
+              component={ShoppingCartScreen}
+            ></Tab.Screen>
+
             <Tab.Screen
               name="Perfil"
               options={{

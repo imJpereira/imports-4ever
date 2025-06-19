@@ -7,7 +7,8 @@ import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
 import ProductScreen from './screens/ProductScreen';
 import ProductDetailsScreen from './screens/ProductDetailsScreen';
-import ShoppingCartScreen from "./screens/ShoppingCartScreen";
+import {ShoppingCartScreen} from "./screens/ShoppingCartScreen";
+import { ShoppingCartProvider } from './contexts/ShoppingCartContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +16,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
+    <ShoppingCartProvider>
 
     <Stack.Navigator>
           <Stack.Screen
@@ -24,7 +26,7 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={SignInScreen}
-          ></Stack.Screen>
+            ></Stack.Screen>
 
           <Stack.Screen
             name="SignUp"
@@ -41,7 +43,7 @@ export default function App() {
               headerShown:false,
             }}
             component={NavigationBar}
-          ></Stack.Screen>
+            ></Stack.Screen>
           <Stack.Screen
             name="OrderScreen"
             options={{
@@ -49,7 +51,7 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={OrderScreen}
-          ></Stack.Screen>
+            ></Stack.Screen>
 
            <Stack.Screen
             name="ProductScreen"
@@ -58,8 +60,9 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={ProductScreen}
-          ></Stack.Screen> 
+            ></Stack.Screen> 
 
+          
            <Stack.Screen
             name="ProductDetails"
             options={{
@@ -67,10 +70,20 @@ export default function App() {
               headerTitleAlign: "center",
             }}
             component={ProductDetailsScreen}
-          ></Stack.Screen> 
-
+            ></Stack.Screen> 
+          
+           <Stack.Screen
+            name="ShoppingCart"
+            options={{
+              headerBackTitle: "Produto",
+              headerTitleAlign: "center",
+            }}
+            component={ShoppingCartScreen}
+            ></Stack.Screen> 
+          
       </Stack.Navigator>
 
+    </ShoppingCartProvider>
     </NavigationContainer>
     
   );

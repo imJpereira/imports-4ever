@@ -7,12 +7,16 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Alert, 
 } from 'react-native';
-
+import { useShoppingCart } from '../contexts/ShoppingCartContext'; 
 export default function CamisaDoBrasilScreen() {
   const [selectedSize, setSelectedSize] = useState(null);
+  const { addToCart } = useShoppingCart(); 
 
   const product = {
+
+    id: 1,
     name: "Camisa oficial da seleção brasileira 2024",
     description: "Camisa oficial da seleção brasileira 2024",
     review: 4.5,
@@ -28,24 +32,33 @@ export default function CamisaDoBrasilScreen() {
 
   const sizes = ['P', 'M', 'G', 'GG', 'XG'];
 
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      Alert.alert("Erro", "Por favor, selecione um tamanho.");
+      return;
+    }
+
+    const productToAdd = {
+      ...product,
+      size: selectedSize,
+      id: `${product.id}-${selectedSize}` 
+    };
+    
+    addToCart(productToAdd);
+    Alert.alert("Sucesso!", "Produto adicionado ao carrinho.");
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.card}>
         <Image source={{ uri: product.image }} style={styles.productImage} />
-
         <Text style={styles.name}>{product.name}</Text>
         <Text style={styles.brand}>Marca: {product.brand}</Text>
-
-        
-
         <View style={styles.priceBox}>
           <Text style={styles.finalPrice}>R$ {product.finalPrice.toFixed(2)}</Text>
           <Text style={styles.oldPrice}>R$ {product.price.toFixed(2)}</Text>
           <Text style={styles.discount}>{product.discount}% off</Text>
         </View>
-
-        
-
         <Text style={styles.sectionTitle}>Tamanhos disponíveis</Text>
         <View style={styles.sizeContainer}>
           {sizes.map(size => (
@@ -77,7 +90,7 @@ export default function CamisaDoBrasilScreen() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.addToCartButton}>
+        <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
           <Text style={styles.addToCartText}>Adicionar ao carrinho</Text>
         </TouchableOpacity>
       </View>

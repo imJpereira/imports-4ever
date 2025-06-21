@@ -2,21 +2,21 @@ import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 const CheckoutScreen = ({ route, navigation }) => {
-  const { carrinho, total } = route.params;
+  const { shoppingCart, total } = route.params;
 
-  const finalizarCompra = () => {
+  const finalizePurchase = () => {
     Alert.alert('Compra finalizada!', 'Obrigado pela sua compra.');
   };
 
-  const voltarAoCarrinho = () => {
+  const backToCart = () => {
     navigation.goBack();
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Text style={styles.nome}>{item.nome}</Text>
-      <Text>Quantidade: {item.quantidade}</Text>
-      <Text>Subtotal: R$ {(item.preco * item.quantidade).toFixed(2)}</Text>
+      <Text style={styles.nome}>{item.name}</Text>
+      <Text>Quantidade: {item.quantity}</Text>
+      <Text>Subtotal: R$ {(item.preco * item.quantity).toFixed(2)}</Text>
     </View>
   );
 
@@ -24,7 +24,7 @@ const CheckoutScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <Text style={styles.titulo}>Resumo do Pedido</Text>
       <FlatList
-        data={carrinho}
+        data={shoppingCart}
         keyExtractor={item => item.id}
         renderItem={renderItem}
         ListEmptyComponent={<Text style={styles.vazio}>Nenhum item no carrinho.</Text>}
@@ -32,10 +32,10 @@ const CheckoutScreen = ({ route, navigation }) => {
       <Text style={styles.total}>Total: R$ {total}</Text>
 
       <View style={styles.botoesContainer}>
-        <TouchableOpacity style={styles.botaoVoltar} onPress={voltarAoCarrinho}>
+        <TouchableOpacity style={styles.botaoVoltar} onPress={backToCart}>
           <Text style={styles.textoBotao}>Voltar ao Carrinho</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.botaoFinalizar} onPress={finalizarCompra}>
+        <TouchableOpacity style={styles.botaoFinalizar} onPress={finalizePurchase}>
           <Text style={styles.textoBotao}>Finalizar Compra</Text>
         </TouchableOpacity>
       </View>

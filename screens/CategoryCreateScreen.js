@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native'
 import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
 import { colors, metrics, typography } from '../theme'
+import SearchBar from '../components/SearchBar'
 
-export default function CategoryCreateScreen({ navigation }) {
+export default function TeamCreateScreen({ navigation }) {
   const [formVisible, setFormVisible] = useState(false)
-  const [categories, setCategories] = useState([])
+  const [teams, setTeams] = useState([])
   const [form, setForm] = useState({ nome: '' })
   const [editingIndex, setEditingIndex] = useState(null)
+  const [searchText, setSearchText] = useState('')
 
   const handleChange = value => setForm({ nome: value })
 
@@ -17,11 +19,11 @@ export default function CategoryCreateScreen({ navigation }) {
       return
     }
     if (editingIndex !== null) {
-      const updated = [...categories]
+      const updated = [...teams]
       updated[editingIndex] = form
-      setCategories(updated)
+      setTeams(updated)
     } else {
-      setCategories([...categories, form])
+      setTeams([...teams, form])
     }
     setForm({ nome: '' })
     setEditingIndex(null)
@@ -29,14 +31,14 @@ export default function CategoryCreateScreen({ navigation }) {
   }
 
   const handleEdit = index => {
-    setForm(categories[index])
+    setForm(teams[index])
     setEditingIndex(index)
     setFormVisible(true)
   }
 
   const handleDelete = index => {
-    const updated = categories.filter((_, i) => i !== index)
-    setCategories(updated)
+    const updated = teams.filter((_, i) => i !== index)
+    setTeams(updated)
   }
 
   const renderItem = ({ item, index }) => (
@@ -52,23 +54,30 @@ export default function CategoryCreateScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {!formVisible && (
-        <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.addCard}>
-          <Text style={styles.addText}>CADASTRE SUA CATEGORIA</Text>
-        </TouchableOpacity>
-      )}
+      <SearchBar
+        value={searchText}
+        onChangeText={setSearchText}
+        onSearch={() => {}}
+      />
+
       {formVisible && (
-        <Animated.View entering={FadeInDown.duration(300)} exiting={FadeOutUp.duration(300)} style={styles.formContainer}>
+        <Animated.View
+          entering={FadeInDown.duration(300)}
+          exiting={FadeOutUp.duration(300)}
+          style={styles.formContainer}
+        >
           <TextInput
             placeholder="Nome da categoria"
+            placeholderTextColor={colors.textPrimary}
             value={form.nome}
             onChangeText={handleChange}
             style={styles.input}
-            placeholderTextColor={colors.textPrimary}
           />
           <View style={styles.formButtons}>
             <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-              <Text style={styles.submitText}>{editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}</Text>
+              <Text style={styles.submitText}>
+                {editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.cancelBtn}
@@ -84,10 +93,10 @@ export default function CategoryCreateScreen({ navigation }) {
         </Animated.View>
       )}
       <FlatList
-        data={categories}
+        data={teams}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
-        contentContainerStyle={categories.length === 0 ? styles.emptyList : null}
+        contentContainerStyle={teams.length === 0 ? styles.emptyList : null}
       />
       {!formVisible && (
         <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.fab}>
@@ -102,25 +111,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: metrics.spacing,
-    backgroundColor: colors.background
-  },
-  addCard: {
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: colors.primary,
-    padding: metrics.spacing,
-    alignItems: 'center',
-    marginBottom: metrics.spacing,
-    borderRadius: metrics.borderRadius,
-    backgroundColor: colors.cardBackground
-  },
-  addText: {
-    color: colors.primary,
-    fontWeight: typography.fontWeightBold,
-    fontSize: typography.fontSizeNormal
+    backgroundColor: colors.background,
   },
   formContainer: {
-    marginBottom: metrics.spacing
+    marginBottom: metrics.spacing,
   },
   input: {
     borderWidth: 1,
@@ -130,11 +124,11 @@ const styles = StyleSheet.create({
     marginBottom: metrics.spacing * 0.5,
     backgroundColor: colors.inputBackground,
     fontSize: typography.fontSizeNormal,
-    color: colors.textPrimary
+    color: colors.textPrimary,
   },
   formButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   submitBtn: {
     backgroundColor: colors.primary,
@@ -142,11 +136,11 @@ const styles = StyleSheet.create({
     borderRadius: metrics.borderRadius,
     flex: 1,
     marginRight: metrics.spacing * 0.5,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   submitText: {
     color: colors.textOnPrimary,
-    fontWeight: typography.fontWeightBold
+    fontWeight: typography.fontWeightBold,
   },
   cancelBtn: {
     backgroundColor: colors.danger,
@@ -154,11 +148,11 @@ const styles = StyleSheet.create({
     borderRadius: metrics.borderRadius,
     flex: 1,
     marginLeft: metrics.spacing * 0.5,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   cancelText: {
     color: colors.textOnPrimary,
-    fontWeight: typography.fontWeightBold
+    fontWeight: typography.fontWeightBold,
   },
   card: {
     backgroundColor: colors.cardBackground,
@@ -169,27 +163,27 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 2
+    elevation: 2,
   },
   cardContent: {
-    paddingVertical: metrics.spacing * 0.5
+    paddingVertical: metrics.spacing * 0.5,
   },
   cardTitle: {
     fontSize: typography.fontSizeTitle,
     fontWeight: typography.fontWeightBold,
     textAlign: 'center',
-    color: colors.textPrimary
+    color: colors.textPrimary,
   },
   deleteBtn: {
     marginTop: metrics.spacing * 0.5,
     backgroundColor: colors.danger,
     borderRadius: metrics.borderRadius,
     paddingVertical: metrics.spacing * 0.5,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   deleteText: {
     color: colors.textOnPrimary,
-    fontWeight: typography.fontWeightBold
+    fontWeight: typography.fontWeightBold,
   },
   fab: {
     position: 'absolute',
@@ -201,16 +195,16 @@ const styles = StyleSheet.create({
     borderRadius: metrics.fabSize / 2,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4
+    elevation: 4,
   },
   fabText: {
     color: colors.textOnPrimary,
     fontSize: typography.fontSizeTitle,
-    fontWeight: typography.fontWeightBold
+    fontWeight: typography.fontWeightBold,
   },
   emptyList: {
     flexGrow: 1,
     justifyContent: 'center',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 })

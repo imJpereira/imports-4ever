@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native'
 import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
 import { colors, metrics, typography } from '../theme'
+import SearchBar from '../components/SearchBar'
 
 export default function TeamCreateScreen({ navigation }) {
   const [formVisible, setFormVisible] = useState(false)
   const [teams, setTeams] = useState([])
   const [form, setForm] = useState({ nome: '' })
   const [editingIndex, setEditingIndex] = useState(null)
+  const [searchText, setSearchText] = useState('')
 
   const handleChange = value => setForm({ nome: value })
 
@@ -52,11 +54,12 @@ export default function TeamCreateScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {!formVisible && (
-        <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.addCard}>
-          <Text style={styles.addText}>CADASTRE SEU TIME</Text>
-        </TouchableOpacity>
-      )}
+      <SearchBar
+        value={searchText}
+        onChangeText={setSearchText}
+        onSearch={() => {}}
+      />
+
       {formVisible && (
         <Animated.View
           entering={FadeInDown.duration(300)}
@@ -109,21 +112,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: metrics.spacing,
     backgroundColor: colors.background,
-  },
-  addCard: {
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: colors.primary,
-    padding: metrics.spacing,
-    alignItems: 'center',
-    marginBottom: metrics.spacing,
-    borderRadius: metrics.borderRadius,
-    backgroundColor: colors.cardBackground,
-  },
-  addText: {
-    color: colors.primary,
-    fontWeight: typography.fontWeightBold,
-    fontSize: typography.fontSizeNormal,
   },
   formContainer: {
     marginBottom: metrics.spacing,

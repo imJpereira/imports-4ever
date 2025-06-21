@@ -15,8 +15,8 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
-import SearchBar from '../components/SearchBar';
-import { uploadImage } from '../services/imageService';
+import SearchBar from '../../components/SearchBar';
+import { uploadImage } from '../../services/imageService';
 
 const placeholderImage = 'https://via.placeholder.com/150';
 

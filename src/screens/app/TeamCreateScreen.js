@@ -1,52 +1,84 @@
-import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Alert,
+} from 'react-native'
 import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
-import { colors, metrics, typography } from '../theme'
-import SearchBar from '../components/SearchBar'
+import {
+  getTeams,
+  createTeam,
+  updateTeam,
+  deleteTeam,
+} from '../../services/TeamService'
 
-export default function TeamCreateScreen({ navigation }) {
+import { colors, metrics, typography } from '../../../assets/js/theme'
+import SearchBar from '../../components/SearchBar'
+
+export default function TeamCreateScreen() {
   const [formVisible, setFormVisible] = useState(false)
   const [teams, setTeams] = useState([])
   const [form, setForm] = useState({ nome: '' })
-  const [editingIndex, setEditingIndex] = useState(null)
+  const [editingTeamId, setEditingTeamId] = useState(null)
+
+  useEffect(() => {
+    loadTeams()
+  }, [])
+
+  const loadTeams = async () => {
+    const { teams, error } = await getTeams()
+    if (!error) setTeams(teams)
+    else Alert.alert('Erro', 'Erro ao carregar os times')
+  }
+
   const [searchText, setSearchText] = useState('')
+
 
   const handleChange = value => setForm({ nome: value })
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.nome.trim()) {
-      Alert.alert('Erro', 'O nome do esporte não pode estar vazio.')
+      Alert.alert('Erro', 'O nome do time não pode estar vazio.')
       return
     }
-    if (editingIndex !== null) {
-      const updated = [...teams]
-      updated[editingIndex] = form
-      setTeams(updated)
-    } else {
-      setTeams([...teams, form])
+
+    const { error } = editingTeamId
+      ? await updateTeam(editingTeamId, form)
+      : await createTeam(form)
+
+    if (error) {
+      Alert.alert('Erro', error)
+      return
     }
+
     setForm({ nome: '' })
-    setEditingIndex(null)
+    setEditingTeamId(null)
     setFormVisible(false)
+    loadTeams()
   }
 
-  const handleEdit = index => {
-    setForm(teams[index])
-    setEditingIndex(index)
+  const handleEdit = team => {
+    setForm({ nome: team.name })
+    setEditingTeamId(team.id)
     setFormVisible(true)
   }
 
-  const handleDelete = index => {
-    const updated = teams.filter((_, i) => i !== index)
-    setTeams(updated)
+  const handleDelete = async id => {
+    const { error } = await deleteTeam(id)
+    if (error) Alert.alert('Erro', error)
+    else loadTeams()
   }
 
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({ item }) => (
     <Animated.View entering={FadeInDown} style={styles.card}>
-      <TouchableOpacity onPress={() => handleEdit(index)} style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{item.nome}</Text>
+      <TouchableOpacity onPress={() => handleEdit(item)} style={styles.cardContent}>
+        <Text style={styles.cardTitle}>{item.name}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(index)}>
+      <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(item.id)}>
         <Text style={styles.deleteText}>EXCLUIR</Text>
       </TouchableOpacity>
     </Animated.View>
@@ -67,7 +99,7 @@ export default function TeamCreateScreen({ navigation }) {
           style={styles.formContainer}
         >
           <TextInput
-            placeholder="Nome do esporte"
+            placeholder="Nome do time"
             placeholderTextColor={colors.textPrimary}
             value={form.nome}
             onChangeText={handleChange}
@@ -76,7 +108,7 @@ export default function TeamCreateScreen({ navigation }) {
           <View style={styles.formButtons}>
             <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
               <Text style={styles.submitText}>
-                {editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}
+                {editingTeamId ? 'ATUALIZAR' : 'CADASTRAR'}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -84,7 +116,7 @@ export default function TeamCreateScreen({ navigation }) {
               onPress={() => {
                 setForm({ nome: '' })
                 setFormVisible(false)
-                setEditingIndex(null)
+                setEditingTeamId(null)
               }}
             >
               <Text style={styles.cancelText}>CANCELAR</Text>
@@ -94,7 +126,7 @@ export default function TeamCreateScreen({ navigation }) {
       )}
       <FlatList
         data={teams}
-        keyExtractor={(_, index) => index.toString()}
+        keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={teams.length === 0 ? styles.emptyList : null}
       />

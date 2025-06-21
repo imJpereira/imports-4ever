@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { useShoppingCart } from '../contexts/ShoppingCartContext';
+import { useShoppingCart } from '../../contexts/ShoppingCartContext';
 
 const CartItem = ({ item }) => {
   const { incrementQuantity, decrementQuantity, removeFromCart } = useShoppingCart();
@@ -27,7 +27,7 @@ const CartItem = ({ item }) => {
   );
 };
 
-export function ShoppingCartScreen() {
+export default function ShoppingCartScreen() {
   const { cartItems, cartTotal, clearCart } = useShoppingCart();
 
   if (cartItems.length === 0) {

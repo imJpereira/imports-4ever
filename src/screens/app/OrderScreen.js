@@ -8,7 +8,7 @@ import {
   Modal,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { colors, metrics, typography } from '../theme'
+import { colors, metrics, typography } from '../../../assets/js/theme'
 
 export default function OrderScreen() {
   const [selectedOrder, setSelectedOrder] = useState(null)

@@ -1,12 +1,15 @@
 import { StatusBar } from "expo-status-bar";
-import AuthProvider from "./context/AuthContext";
-import Routes from "./routes/routes";
+import AuthProvider from "./src/contexts/AuthContext";
+import ShoppingCartProvider from "./src/contexts/ShoppingCartContext"
+import Routes from "./src/routes/routes"
 
 export default function App() {
   return (
     <AuthProvider>
-      <Routes />
-      <StatusBar style="auto" />
+      <ShoppingCartProvider>
+        <Routes />
+        <StatusBar style="auto" />
+      </ShoppingCartProvider>
     </AuthProvider>
   );
 }

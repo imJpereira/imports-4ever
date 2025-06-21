@@ -15,12 +15,14 @@ import {
   AntDesign,
 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function AccountScreen() {
   const navigation = useNavigation();
 
   const [isEditing, setIsEditing] = useState(false);
   const [userName, setUserName] = useState('Usuário');
+  const { user } = useAuth();
 
   const toggleEditing = () => {
     setIsEditing(!isEditing);
@@ -51,7 +53,7 @@ export default function AccountScreen() {
               />
             ) : (
               <Text style={styles.userName}>
-                Olá, <Text style={{ fontWeight: 'bold' }}>{userName}</Text>
+                Olá, <Text style={{ fontWeight: 'bold' }}>{user.name}</Text>
               </Text>
             )}
             <TouchableOpacity onPress={toggleEditing} style={{ marginLeft: 8 }}>
@@ -85,7 +87,7 @@ export default function AccountScreen() {
 
       <TouchableOpacity
         style={styles.option}
-        onPress={() => navigation.navigate('AccountData')}
+        onPress={() => navigation.navigate('AccountDataScreen')}
       >
         <Feather name="user" size={24} color="#06C823" />
         <View style={styles.optionText}>
@@ -109,7 +111,7 @@ export default function AccountScreen() {
 
       <TouchableOpacity
         style={styles.option}
-        onPress={() => navigation.navigate('CategoryCreate')}
+        onPress={() => navigation.navigate('CategoryCreateScreen')}
       >
         <Feather name="tag" size={24} color="#06C823" />
         <View style={styles.optionText}>
@@ -121,7 +123,7 @@ export default function AccountScreen() {
 
       <TouchableOpacity
         style={styles.option}
-        onPress={() => navigation.navigate('TeamCreate')}
+        onPress={() => navigation.navigate('TeamCreateScreen')}
       >
         <Feather name="users" size={24} color="#06C823" />
         <View style={styles.optionText}>
@@ -133,7 +135,7 @@ export default function AccountScreen() {
 
       <TouchableOpacity
         style={styles.option}
-        onPress={() => navigation.navigate('SportCreate')}
+        onPress={() => navigation.navigate('SportCreateScreen')}
       >
         <MaterialIcons name="sports-soccer" size={24} color="#06C823" />
         <View style={styles.optionText}>

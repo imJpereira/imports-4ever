@@ -11,8 +11,8 @@ export default function AuthProvider({children}) {
 
         //para teste:
         credentials = {
-            id: 1,
-            name: "admin"
+            id: "5b89267f-86e2-4eda-a51a-0a30584a20c3",
+            name: "meu amorrrrr"
         }
 
         //fazer requisição para o backend validando as credenciais
@@ -30,7 +30,7 @@ export default function AuthProvider({children}) {
         //const response = await axios.post("http://localhost:8000/auth/signup", userData)
         //retorna as credenciais
 
-        signIn({id: 2, name: "user2"}); //response
+        signIn({id: 1, name: "admin"}); //response
     }
 
     const logout = () => {

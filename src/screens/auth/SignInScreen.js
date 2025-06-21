@@ -1,8 +1,17 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
+import { useAuth } from '../../contexts/AuthContext';
+
 
 export default function SignInScreen({ navigation }) {
+
+  const { signIn } = useAuth();
+
+  const handleSignIn = async () => {
+      await signIn();
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>4ever{"\n"}Imports</Text>
@@ -22,7 +31,7 @@ export default function SignInScreen({ navigation }) {
         <Text style={styles.forgotText}>Esqueceu sua senha?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainTabs')}>
+      <TouchableOpacity style={styles.button} onPress={() => handleSignIn()}>
         <Text style={styles.buttonText}>Acessar</Text>
       </TouchableOpacity>
 

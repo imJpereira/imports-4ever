@@ -1,8 +1,8 @@
 import { View, FlatList, StyleSheet, Text, ScrollView } from "react-native";
-import ProductCard from "../components/ProductCard";
-import MiniProductType from "../components/MiniProductType";
-import MiniSportCard from "../components/MIniSportCard";
-import SearchBar from "../components/SearchBar";
+import ProductCard from "../../components/ProductCard";
+import MiniProductType from "../../components/MiniProductType";
+import MiniSportCard from "../../components/MIniSportCard";
+import SearchBar from "../../components/SearchBar";
 import { useState } from "react";
 
 

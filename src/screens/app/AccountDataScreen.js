@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import { colors, metrics, typography } from '../theme'
+import { colors, metrics, typography } from '../../../assets/js/theme'
 
 export default function AccountDataScreen() {
   const [nome, setNome] = useState('')

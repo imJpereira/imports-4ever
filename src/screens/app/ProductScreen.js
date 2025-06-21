@@ -1,5 +1,7 @@
 import { View,StyleSheet,FlatList } from "react-native";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../../components/ProductCard";
+import SearchBar from "../../components/SearchBar";
+import { useState } from "react";
 
 export default function ProductScreen({navigation}) {
 
@@ -204,8 +206,15 @@ export default function ProductScreen({navigation}) {
         // }
       ];
 
+    const [searchText, setSearchText] = useState();
+
     return (
         <View>
+            <SearchBar 
+              value={searchText} 
+              onChangeText={setSearchText}
+              onSearch={() => console.log("jurooooo") }
+            />
             <FlatList 
                 data={products}
                 numColumns={2}
@@ -213,7 +222,7 @@ export default function ProductScreen({navigation}) {
                 renderItem={({item}) => {
                     return <ProductCard
                             product={{...item}}
-                            onPress={() => navigation.navigate("ProductDetails")} 
+                            onPress={() => navigation.navigate("ProductDetailsScreen")} 
                             />
                 }}                
             />  

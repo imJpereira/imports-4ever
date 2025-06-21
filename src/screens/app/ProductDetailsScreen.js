@@ -9,8 +9,9 @@ import {
   TextInput,
   Alert, 
 } from 'react-native';
-import { useShoppingCart } from '../contexts/ShoppingCartContext'; 
-export default function CamisaDoBrasilScreen() {
+import { useShoppingCart } from '../../contexts/ShoppingCartContext'; 
+
+export default function ProductDetailsScreen() {
   const [selectedSize, setSelectedSize] = useState(null);
   const { addToCart } = useShoppingCart(); 
 

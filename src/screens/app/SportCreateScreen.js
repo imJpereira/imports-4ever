@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native'
 import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
-import { colors, metrics, typography } from '../theme'
-import SearchBar from '../components/SearchBar'
+import { colors, metrics, typography } from '../../../assets/js/theme'
+import SearchBar from '../../components/SearchBar'
 
 export default function TeamCreateScreen({ navigation }) {
   const [formVisible, setFormVisible] = useState(false)
@@ -15,7 +15,7 @@ export default function TeamCreateScreen({ navigation }) {
 
   const handleSubmit = () => {
     if (!form.nome.trim()) {
-      Alert.alert('Erro', 'O nome da categoria não pode estar vazio.')
+      Alert.alert('Erro', 'O nome do esporte não pode estar vazio.')
       return
     }
     if (editingIndex !== null) {
@@ -67,7 +67,7 @@ export default function TeamCreateScreen({ navigation }) {
           style={styles.formContainer}
         >
           <TextInput
-            placeholder="Nome da categoria"
+            placeholder="Nome do esporte"
             placeholderTextColor={colors.textPrimary}
             value={form.nome}
             onChangeText={handleChange}

@@ -8,7 +8,7 @@ export default function SearchBar({ value, onChangeText, onSearch }) {
         style={styles.input}
         value={value}
         onChangeText={onChangeText}
-        placeholder={"Pesquise um produto..."}
+        placeholder={"Pesquisar ..."}
         placeholderTextColor="#999"
       />
       <Pressable style={styles.button} onPress={onSearch}>

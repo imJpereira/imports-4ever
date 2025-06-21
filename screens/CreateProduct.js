@@ -11,8 +11,12 @@ import {
   Modal,
   ScrollView,
   Dimensions,
+  Alert,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import SearchBar from '../components/SearchBar';
+import { uploadImage } from '../services/imageService';
 
 const placeholderImage = 'https://via.placeholder.com/150';
 
@@ -27,9 +31,11 @@ export default function ProductScreen() {
     category: '',
     sport: '',
     active: false,
+    imageUrl: null,
   });
   const [errors, setErrors] = useState({});
   const [editingIndex, setEditingIndex] = useState(null);
+  const [searchText, setSearchText] = useState('');
 
   const validate = () => {
     const newErrors = {};
@@ -38,6 +44,29 @@ export default function ProductScreen() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  async function pickImage() {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos.');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      try {
+        const url = await uploadImage(result.assets[0].uri);
+        setForm(prev => ({ ...prev, imageUrl: url }));
+      } catch (err) {
+        Alert.alert('Erro', 'Falha no upload da imagem.');
+      }
+    }
+  }
 
   const handleAddOrUpdate = () => {
     if (!validate()) return;
@@ -75,10 +104,15 @@ export default function ProductScreen() {
       category: '',
       sport: '',
       active: false,
+      imageUrl: null,
     });
     setEditingIndex(null);
     setErrors({});
   };
+
+  const filteredProducts = products.filter((item) =>
+    item.name.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   const renderProductCard = ({ item, index }) => (
     <Animated.View
@@ -86,11 +120,11 @@ export default function ProductScreen() {
       exiting={FadeOutUp.duration(300)}
       style={[
         styles.card,
-        item.active ? styles.activeCard : styles.inactiveCard
+        item.active ? styles.activeCard : styles.inactiveCard,
       ]}
     >
       <TouchableOpacity onPress={() => handleEdit(index)} style={{ flexDirection: 'row', flex: 1 }}>
-        <Image source={{ uri: placeholderImage }} style={styles.productImage} />
+        <Image source={{ uri: item.imageUrl || placeholderImage }} style={styles.productImage} />
         <View style={styles.productInfo}>
           <Text style={styles.cardTitle}>{item.name}</Text>
           <Text style={styles.description} numberOfLines={2}>{item.description || 'Sem descrição'}</Text>
@@ -116,22 +150,33 @@ export default function ProductScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.addButton} onPress={() => setFormVisible(true)}>
-        <Text style={styles.addButtonText}>+ ADICIONAR UM ITEM</Text>
-      </TouchableOpacity>
+      <SearchBar
+        value={searchText}
+        onChangeText={setSearchText}
+        onSearch={() => {}}
+      />
 
       <FlatList
-        data={products}
+        data={filteredProducts}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderProductCard}
         contentContainerStyle={{ paddingBottom: 120 }}
       />
 
+      {!formVisible && (
+        <TouchableOpacity style={styles.fab} onPress={() => setFormVisible(true)}>
+          <Text style={styles.fabText}>+</Text>
+        </TouchableOpacity>
+      )}
+
       <Modal
         visible={formVisible}
         animationType="slide"
         transparent
-        onRequestClose={() => { setFormVisible(false); resetForm(); }}
+        onRequestClose={() => {
+          setFormVisible(false);
+          resetForm();
+        }}
       >
         <View style={styles.modalOverlay}>
           <ScrollView contentContainerStyle={styles.modalContent}>
@@ -190,6 +235,17 @@ export default function ProductScreen() {
               onChangeText={(text) => setForm({ ...form, sport: text })}
             />
 
+            <View style={{ marginBottom: 16 }}>
+              <Text style={styles.label}>Imagem do produto</Text>
+              <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+                {form.imageUrl ? (
+                  <Image source={{ uri: form.imageUrl }} style={styles.imagePreview} />
+                ) : (
+                  <Text style={{ color: '#555' }}>Clique para escolher uma imagem</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+
             <View style={styles.switchRow}>
               <Text style={styles.switchLabel}>Ativo</Text>
               <Switch
@@ -226,23 +282,9 @@ const cardWidth = width - 32;
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#fff' },
 
-  addButton: {
-    backgroundColor: '#06C823',
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginBottom: 12,
-    elevation: 4,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-
   card: {
     borderRadius: 12,
-    padding: 16,    
+    padding: 16,
     marginBottom: 16,
     width: cardWidth,
     shadowColor: '#000',
@@ -254,28 +296,26 @@ const styles = StyleSheet.create({
   },
 
   activeCard: {
-  backgroundColor: '#e6ffe6',
-  borderColor: '#06C823', 
-  borderWidth: 3,
-  shadowColor: '#06C823',
-  shadowOpacity: 0.3,
-  shadowOffset: { width: 0, height: 3 },
-  shadowRadius: 6,
-  elevation: 4,
-},
-
+    backgroundColor: '#e6ffe6',
+    borderColor: '#06C823',
+    borderWidth: 3,
+    shadowColor: '#06C823',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 4,
+  },
 
   inactiveCard: {
-  backgroundColor: '#f9f9f9',
-  borderColor: '#999999',
-  borderWidth: 3,
-  shadowColor: '#D11A2A',
-  shadowOpacity: 0.3,
-  shadowOffset: { width: 0, height: 3 },
-  shadowRadius: 6,
-  elevation: 4,
-},
-
+    backgroundColor: '#f9f9f9',
+    borderColor: '#999999',
+    borderWidth: 3,
+    shadowColor: '#D11A2A',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 4,
+  },
 
   productImage: {
     width: 100,
@@ -286,11 +326,11 @@ const styles = StyleSheet.create({
   },
 
   productInfo: {
-    marginLeft: 12,  
-    marginBottom: 8, 
+    marginLeft: 12,
+    marginBottom: 8,
     flex: 1,
   },
-  
+
   cardTitle: {
     fontWeight: 'bold',
     fontSize: 18,
@@ -416,5 +456,38 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+
+  fab: {
+    position: 'absolute',
+    right: 16,
+    bottom: 16,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#06C823',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+  },
+  fabText: {
+    fontSize: 28,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+
+  imagePicker: {
+    borderWidth: 1,
+    borderColor: '#aaa',
+    borderRadius: 10,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fafafa',
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
   },
 });

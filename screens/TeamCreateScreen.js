@@ -17,6 +17,7 @@ import {
 } from '../services/TeamService'
 
 import { colors, metrics, typography } from '../theme'
+import SearchBar from '../components/SearchBar'
 
 export default function TeamCreateScreen() {
   const [formVisible, setFormVisible] = useState(false)
@@ -33,6 +34,10 @@ export default function TeamCreateScreen() {
     if (!error) setTeams(teams)
     else Alert.alert('Erro', 'Erro ao carregar os times')
   }
+
+  const [editingIndex, setEditingIndex] = useState(null)
+  const [searchText, setSearchText] = useState('')
+
 
   const handleChange = value => setForm({ nome: value })
 
@@ -82,11 +87,12 @@ export default function TeamCreateScreen() {
 
   return (
     <View style={styles.container}>
-      {!formVisible && (
-        <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.addCard}>
-          <Text style={styles.addText}>CADASTRE SEU TIME</Text>
-        </TouchableOpacity>
-      )}
+      <SearchBar
+        value={searchText}
+        onChangeText={setSearchText}
+        onSearch={() => {}}
+      />
+
       {formVisible && (
         <Animated.View
           entering={FadeInDown.duration(300)}
@@ -139,21 +145,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: metrics.spacing,
     backgroundColor: colors.background,
-  },
-  addCard: {
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: colors.primary,
-    padding: metrics.spacing,
-    alignItems: 'center',
-    marginBottom: metrics.spacing,
-    borderRadius: metrics.borderRadius,
-    backgroundColor: colors.cardBackground,
-  },
-  addText: {
-    color: colors.primary,
-    fontWeight: typography.fontWeightBold,
-    fontSize: typography.fontSizeNormal,
   },
   formContainer: {
     marginBottom: metrics.spacing,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   View,
   Text,
@@ -6,29 +6,51 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
+  Alert,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors, metrics, typography } from '../../../assets/js/theme'
+import { getOrders, getOrderById, deleteOrder } from '../../services/OrderService' // ajustar caminho
 
 export default function OrderScreen() {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [orderModalVisible, setOrderModalVisible] = useState(false)
   const [products, setProducts] = useState([])
-  const [pedidos, setPedidos] = useState([
-    { id: '1', nome: 'Pedido 1', data: '13/06/2025', produtos: ['Tênis Nike', 'Camisa Nike'] },
-    { id: '2', nome: 'Pedido 2', data: '15/06/2025', produtos: ['Camisa do Corinthians'] },
-    { id: '3', nome: 'Pedido 3', data: '20/06/2025', produtos: [] },
-  ])
+  const [pedidos, setPedidos] = useState([])
 
-  const openOrderModal = order => {
-    setSelectedOrder(order)
-    setProducts(order.produtos || [])
-    setOrderModalVisible(true)
+  useEffect(() => {
+    fetchOrders()
+  }, [])
+
+  async function fetchOrders() {
+    try {
+      const orders = await getOrders()
+      setPedidos(orders)
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao carregar pedidos')
+    }
   }
 
-  const removeOrder = () => {
-    setPedidos(prev => prev.filter(p => p.id !== selectedOrder.id))
-    setOrderModalVisible(false)
+  async function openOrderModal(order) {
+    setSelectedOrder(order)
+    try {
+      const fullOrder = await getOrderById(order.id)
+      setProducts(fullOrder.produtos || []) // ajustar se chave for diferente
+      setOrderModalVisible(true)
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao carregar detalhes do pedido')
+    }
+  }
+
+  async function removeOrder() {
+    try {
+      // Chamar API para deletar pedido aqui (implemente o deleteOrder no OrderService)
+      await deleteOrder(selectedOrder.id)
+      setPedidos(prev => prev.filter(p => p.id !== selectedOrder.id))
+      setOrderModalVisible(false)
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao excluir pedido')
+    }
   }
 
   const renderOrderItem = ({ item }) => (
@@ -57,7 +79,10 @@ export default function OrderScreen() {
         data={pedidos}
         keyExtractor={item => item.id}
         renderItem={renderOrderItem}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={pedidos.length === 0 ? styles.emptyList : styles.list}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>Nenhum pedido encontrado</Text>
+        }
       />
 
       <Modal visible={orderModalVisible} animationType="slide">
@@ -67,24 +92,11 @@ export default function OrderScreen() {
 
           <FlatList
             data={products}
-            keyExtractor={(item, idx) => idx.toString()}
+            keyExtractor={(item, index) => index.toString()}
             renderItem={renderProductRow}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>Nenhum produto adicionado.</Text>
-            }
           />
 
-          <TouchableOpacity
-            onPress={removeOrder}
-            style={styles.deleteOrderBtn}
-          >
-            <Text style={styles.deleteOrderText}>Excluir Pedido</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() => setOrderModalVisible(false)}
-            style={styles.closeBtn}
-          >
+          <TouchableOpacity onPress={() => setOrderModalVisible(false)} style={styles.closeBtn}>
             <Text style={styles.closeText}>Fechar</Text>
           </TouchableOpacity>
         </View>
@@ -92,6 +104,7 @@ export default function OrderScreen() {
     </View>
   )
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -194,10 +207,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
+  emptyList: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   emptyText: {
-    textAlign: 'center',
     fontSize: typography.large,
-    color: colors.textLight,
-    marginTop: 40,
+    color: '#555',
+    textAlign: 'center',
+    marginTop: 20,
   },
 })

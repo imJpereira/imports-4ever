@@ -7,16 +7,16 @@ import axios from 'axios'
 // })
 
 //conexão casa pereira
-export const gatewayApi = axios.create({
-  baseURL: 'http://192.168.100.225:8765', 
-  timeout: 5000,
-})
-
-//conexão casa alex
 // export const gatewayApi = axios.create({
-  // baseURL: 'http://192.168.0.11:8765', 
-  // timeout: 5000,
-// })
+  // baseURL: 'http://192.168.100.225:8765', 
+ // timeout: 5000,
+//}) 
+
+// conexão casa alex
+  export const gatewayApi = axios.create({
+    baseURL: 'http://192.168.0.11:8765', 
+    timeout: 5000,
+ })
 
 
 // ==== CONEXÕES FORA DO GATEWAY =====
@@ -31,5 +31,11 @@ export const gatewayApi = axios.create({
 //   baseURL: 'http://192.168.0.11:8300', 
 //   timeout: 5000,
 // })
+
+// // conexão docker pereira
+// export const gatewayApi = axios.create({
+//   baseURL: 'http://189.30.255.90:8000', 
+//   timeout: 5000,
+//}) 
 
 

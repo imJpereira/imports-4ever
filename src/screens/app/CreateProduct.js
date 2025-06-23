@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,10 +15,23 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import { Picker } from '@react-native-picker/picker';
+import { Ionicons } from '@expo/vector-icons';
 import SearchBar from '../../components/SearchBar';
 import { uploadImage } from '../../services/imageService';
+import { getTeams } from '../../services/TeamService';
+import { getCategories } from '../../services/CategoryService';
+import { getSports } from '../../services/SportService';
+import {
+  getProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  getProductsByName,
+} from '../../services/ProductService';
 
 const placeholderImage = 'https://via.placeholder.com/150';
+const { width } = Dimensions.get('window');
 
 export default function ProductScreen() {
   const [products, setProducts] = useState([]);
@@ -27,22 +40,142 @@ export default function ProductScreen() {
     name: '',
     description: '',
     value: '',
-    team: '',
-    category: '',
-    sport: '',
+    team: null,
+    category: null,
+    sport: null,
     active: false,
+    highlight: false,
     imageUrl: null,
   });
   const [errors, setErrors] = useState({});
   const [editingIndex, setEditingIndex] = useState(null);
   const [searchText, setSearchText] = useState('');
 
+  const [teams, setTeams] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [sports, setSports] = useState([]);
+
+  useEffect(() => {
+    fetchDropdowns();
+    fetchProductsList();
+  }, []);
+
+  async function fetchDropdowns() {
+    const { teams: fetchedTeams } = await getTeams();
+    const { categories: fetchedCategories } = await getCategories();
+    const { sports: fetchedSports } = await getSports();
+    setTeams(fetchedTeams || []);
+    setCategories(fetchedCategories || []);
+    setSports(fetchedSports || []);
+  }
+
+  async function fetchProductsList() {
+    const { products: fetchedProducts } = await getProducts();
+    setProducts(fetchedProducts || []);
+  }
+
+  async function handleSearch() {
+    if (!searchText.trim()) return fetchProductsList();
+    const { products: results } = await getProductsByName(searchText);
+    setProducts(results || []);
+  }
+
   const validate = () => {
     const newErrors = {};
     if (!form.name.trim()) newErrors.name = 'Nome obrigatório';
     if (!form.value.trim() || isNaN(form.value)) newErrors.value = 'Valor inválido';
+    if (!form.team) newErrors.team = 'Time obrigatório';
+    if (!form.category) newErrors.category = 'Categoria obrigatória';
+    if (!form.sport) newErrors.sport = 'Esporte obrigatório';
+    if (!form.imageUrl) newErrors.imageUrl = 'Imagem obrigatória, selecione uma foto';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  async function handleAddOrUpdate() {
+    const defaultImages = [
+      'https://via.placeholder.com/150/92c952',
+      'https://via.placeholder.com/150/771796',
+      'https://via.placeholder.com/150/24f355',
+      'https://via.placeholder.com/150/d32776',
+    ];
+
+    const imageUrlToUse = form.imageUrl || defaultImages[Math.floor(Math.random() * defaultImages.length)];
+    const tempForm = { ...form, imageUrl: imageUrlToUse };
+    setForm(tempForm);
+
+    const newErrors = {};
+    if (!tempForm.name.trim()) newErrors.name = 'Nome obrigatório';
+    if (!tempForm.value.trim() || isNaN(tempForm.value)) newErrors.value = 'Valor inválido';
+    if (!tempForm.team) newErrors.team = 'Time obrigatório';
+    if (!tempForm.category) newErrors.category = 'Categoria obrigatória';
+    if (!tempForm.sport) newErrors.sport = 'Esporte obrigatório';
+    if (!tempForm.imageUrl) newErrors.imageUrl = 'Imagem obrigatória, selecione uma foto';
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) return;
+
+    const payload = {
+      name: tempForm.name,
+      description: tempForm.description,
+      value: Number(tempForm.value),
+      url: tempForm.imageUrl,
+      team: tempForm.team,
+      category: tempForm.category,
+      sport: tempForm.sport,
+      status: tempForm.active ? 'ATIVO' : 'INATIVO',
+      highlight: tempForm.highlight,
+      discountValue: 0,
+    };
+
+    try {
+      if (editingIndex !== null) {
+        const { product } = await updateProduct(products[editingIndex].id, payload);
+        const updated = [...products];
+        updated[editingIndex] = product;
+        setProducts(updated);
+      } else {
+        const { product } = await createProduct(payload);
+        setProducts(prev => [...prev, product]);
+      }
+      resetForm();
+      setFormVisible(false);
+    } catch {
+      Alert.alert('Erro', 'Falha ao salvar o produto');
+    }
+  }
+
+  function handleEdit(index) {
+    const p = products[index];
+    setForm({
+      name: p.name,
+      description: p.description,
+      value: p.value.toString(),
+      team: p.team,
+      category: p.category,
+      sport: p.sport,
+      active: p.status === 'ATIVO',
+      highlight: p.highlight,
+      imageUrl: p.url,
+    });
+    setEditingIndex(index);
+    setFormVisible(true);
+  }
+
+  const resetForm = () => {
+    setForm({
+      name: '',
+      description: '',
+      value: '',
+      team: null,
+      category: null,
+      sport: null,
+      active: false,
+      highlight: false,
+      imageUrl: null,
+    });
+    setErrors({});
+    setEditingIndex(null);
   };
 
   async function pickImage() {
@@ -52,7 +185,7 @@ export default function ProductScreen() {
       return;
     }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 0.7,
@@ -62,112 +195,96 @@ export default function ProductScreen() {
       try {
         const url = await uploadImage(result.assets[0].uri);
         setForm(prev => ({ ...prev, imageUrl: url }));
-      } catch (err) {
+      } catch {
         Alert.alert('Erro', 'Falha no upload da imagem.');
       }
     }
   }
 
-  const handleAddOrUpdate = () => {
-    if (!validate()) return;
-    const updated = [...products];
-    if (editingIndex !== null) {
-      updated[editingIndex] = form;
-    } else {
-      updated.push(form);
-    }
-    setProducts(updated);
-    setFormVisible(false);
-    resetForm();
-  };
+  async function handleDelete(index) {
+    Alert.alert(
+      'Confirmação',
+      `Deseja realmente excluir o produto "${products[index].name}"?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteProduct(products[index].id);
+              setProducts(prev => prev.filter((_, i) => i !== index));
+              if (editingIndex === index) {
+                resetForm();
+                setFormVisible(false);
+              }
+            } catch {
+              Alert.alert('Erro', 'Falha ao excluir produto');
+            }
+          },
+        },
+      ]
+    );
+  }
 
-  const handleEdit = (index) => {
-    setEditingIndex(index);
-    setForm(products[index]);
-    setFormVisible(true);
-  };
-
-  const handleDelete = (index) => {
-    setProducts((prev) => {
-      const updated = [...prev];
-      updated.splice(index, 1);
-      return updated;
-    });
-  };
-
-  const resetForm = () => {
-    setForm({
-      name: '',
-      description: '',
-      value: '',
-      team: '',
-      category: '',
-      sport: '',
-      active: false,
-      imageUrl: null,
-    });
-    setEditingIndex(null);
-    setErrors({});
-  };
-
-  const filteredProducts = products.filter((item) =>
-    item.name.toLowerCase().includes(searchText.toLowerCase())
-  );
-
-  const renderProductCard = ({ item, index }) => (
-    <Animated.View
-      entering={FadeInDown.duration(300)}
-      exiting={FadeOutUp.duration(300)}
-      style={[
-        styles.card,
-        item.active ? styles.activeCard : styles.inactiveCard,
-      ]}
-    >
-      <TouchableOpacity onPress={() => handleEdit(index)} style={{ flexDirection: 'row', flex: 1 }}>
-        <Image source={{ uri: item.imageUrl || placeholderImage }} style={styles.productImage} />
-        <View style={styles.productInfo}>
-          <Text style={styles.cardTitle}>{item.name}</Text>
-          <Text style={styles.description} numberOfLines={2}>{item.description || 'Sem descrição'}</Text>
-          <Text style={styles.price}>R$ {Number(item.value).toFixed(2)}</Text>
-
-          <View style={styles.tagsRow}>
-            {item.team ? <Text style={styles.tag}>{item.team}</Text> : null}
-            {item.category ? <Text style={styles.tag}>{item.category}</Text> : null}
-            {item.sport ? <Text style={styles.tag}>{item.sport}</Text> : null}
-          </View>
-
-          <Text style={{ marginTop: 4, color: item.active ? '#06C823' : '#999' }}>
-            {item.active ? 'Ativo' : 'Inativo'}
-          </Text>
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => handleDelete(index)} style={styles.deleteBtn}>
-        <Text style={styles.deleteBtnText}>EXCLUIR</Text>
-      </TouchableOpacity>
-    </Animated.View>
-  );
+  async function handleDeleteFromModal() {
+    if (editingIndex === null) return;
+    handleDelete(editingIndex);
+  }
 
   return (
     <View style={styles.container}>
       <SearchBar
         value={searchText}
         onChangeText={setSearchText}
-        onSearch={() => {}}
+        onSearch={handleSearch}
+        placeholder="Buscar produtos"
       />
 
       <FlatList
-        data={filteredProducts}
-        keyExtractor={(_, index) => index.toString()}
-        renderItem={renderProductCard}
-        contentContainerStyle={{ paddingBottom: 120 }}
+        data={products}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item, index }) => (
+          <Animated.View
+            entering={FadeInDown.duration(300)}
+            exiting={FadeOutUp.duration(300)}
+            style={[
+              styles.card,
+              {
+                borderColor: item.status === 'ATIVO' ? '#06C823' : '#aaa',
+                borderWidth: 2,
+              },
+            ]}
+          >
+            <TouchableOpacity
+              onPress={() => handleEdit(index)}
+              style={{ flexDirection: 'row', flex: 1 }}
+            >
+              <Image source={{ uri: item.url || placeholderImage }} style={styles.cardImage} />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{item.name}</Text>
+                <Text style={styles.cardDescription}>{item.description || 'Sem descrição'}</Text>
+                <Text style={styles.cardValue}>R$ {Number(item.value).toFixed(2)}</Text>
+                <Text style={styles.cardStatus}>{item.status === 'ATIVO' ? 'Ativo' : 'Inativo'}</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => handleDelete(index)} style={styles.deleteIconButton}>
+              <Ionicons name="trash-outline" size={24} color="#cc0000" />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
       />
 
-      {!formVisible && (
-        <TouchableOpacity style={styles.fab} onPress={() => setFormVisible(true)}>
-          <Text style={styles.fabText}>+</Text>
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => {
+          resetForm();
+          setFormVisible(true);
+        }}
+      >
+        <Text style={styles.addButtonText}>+</Text>
+      </TouchableOpacity>
 
       <Modal
         visible={formVisible}
@@ -180,7 +297,9 @@ export default function ProductScreen() {
       >
         <View style={styles.modalOverlay}>
           <ScrollView contentContainerStyle={styles.modalContent}>
-            <Text style={styles.modalTitle}>{editingIndex !== null ? 'Editar Produto' : 'Novo Produto'}</Text>
+            <Text style={styles.modalTitle}>
+              {editingIndex !== null ? 'Editar Produto' : 'Novo Produto'}
+            </Text>
 
             <Text style={styles.label}>Nome do produto</Text>
             <TextInput
@@ -212,28 +331,43 @@ export default function ProductScreen() {
             {errors.value && <Text style={styles.error}>{errors.value}</Text>}
 
             <Text style={styles.label}>Time</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite o time"
-              value={form.team}
-              onChangeText={(text) => setForm({ ...form, team: text })}
-            />
+            <Picker
+              selectedValue={form.team}
+              onValueChange={(value) => setForm(prev => ({ ...prev, team: value }))}
+              style={styles.picker}
+            >
+              <Picker.Item label="Selecione um time" value={null} />
+              {teams.map(t => (
+                <Picker.Item key={t.id} label={t.name} value={t.id} />
+              ))}
+            </Picker>
+            {errors.team && <Text style={styles.error}>{errors.team}</Text>}
 
             <Text style={styles.label}>Categoria</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite a categoria"
-              value={form.category}
-              onChangeText={(text) => setForm({ ...form, category: text })}
-            />
+            <Picker
+              selectedValue={form.category}
+              onValueChange={(value) => setForm(prev => ({ ...prev, category: value }))}
+              style={styles.picker}
+            >
+              <Picker.Item label="Selecione uma categoria" value={null} />
+              {categories.map(c => (
+                <Picker.Item key={c.id} label={c.name} value={c.id} />
+              ))}
+            </Picker>
+            {errors.category && <Text style={styles.error}>{errors.category}</Text>}
 
             <Text style={styles.label}>Esporte</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Digite o esporte"
-              value={form.sport}
-              onChangeText={(text) => setForm({ ...form, sport: text })}
-            />
+            <Picker
+              selectedValue={form.sport}
+              onValueChange={(value) => setForm(prev => ({ ...prev, sport: value }))}
+              style={styles.picker}
+            >
+              <Picker.Item label="Selecione um esporte" value={null} />
+              {sports.map(s => (
+                <Picker.Item key={s.id} label={s.name} value={s.id} />
+              ))}
+            </Picker>
+            {errors.sport && <Text style={styles.error}>{errors.sport}</Text>}
 
             <View style={{ marginBottom: 16 }}>
               <Text style={styles.label}>Imagem do produto</Text>
@@ -244,6 +378,7 @@ export default function ProductScreen() {
                   <Text style={{ color: '#555' }}>Clique para escolher uma imagem</Text>
                 )}
               </TouchableOpacity>
+              {errors.imageUrl && <Text style={styles.error}>{errors.imageUrl}</Text>}
             </View>
 
             <View style={styles.switchRow}>
@@ -255,9 +390,20 @@ export default function ProductScreen() {
               />
             </View>
 
-            <View style={styles.buttonRow}>
+            <View style={styles.switchRow}>
+              <Text style={styles.switchLabel}>Destaque</Text>
+              <Switch
+                value={form.highlight}
+                onValueChange={(value) => setForm({ ...form, highlight: value })}
+                thumbColor="#f39c12"
+              />
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <TouchableOpacity onPress={handleAddOrUpdate} style={styles.confirmButton}>
-                <Text style={styles.confirmButtonText}>{editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}</Text>
+                <Text style={styles.confirmButtonText}>
+                  {editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
@@ -269,15 +415,18 @@ export default function ProductScreen() {
                 <Text style={styles.cancelButtonText}>CANCELAR</Text>
               </TouchableOpacity>
             </View>
+
+            {editingIndex !== null && (
+              <TouchableOpacity onPress={handleDeleteFromModal} style={styles.deleteButton}>
+                <Text style={styles.deleteButtonText}>EXCLUIR PRODUTO</Text>
+              </TouchableOpacity>
+            )}
           </ScrollView>
         </View>
       </Modal>
     </View>
   );
 }
-
-const { width } = Dimensions.get('window');
-const cardWidth = width - 32;
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, backgroundColor: '#fff' },
@@ -286,208 +435,182 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    width: cardWidth,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 8,
-    elevation: 6,
-    flexDirection: 'column',
+    backgroundColor: '#f5f5f5',
   },
 
-  activeCard: {
-    backgroundColor: '#e6ffe6',
-    borderColor: '#06C823',
-    borderWidth: 3,
-    shadowColor: '#06C823',
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 6,
-    elevation: 4,
-  },
-
-  inactiveCard: {
-    backgroundColor: '#f9f9f9',
-    borderColor: '#999999',
-    borderWidth: 3,
-    shadowColor: '#D11A2A',
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 6,
-    elevation: 4,
-  },
-
-  productImage: {
+  cardImage: {
     width: 100,
     height: 100,
-    borderRadius: 12,
-    marginBottom: 8,
-    backgroundColor: '#cfcfcf',
+    borderRadius: 10,
+    marginRight: 12,
   },
 
-  productInfo: {
-    marginLeft: 12,
-    marginBottom: 8,
+  cardContent: {
     flex: 1,
+    justifyContent: 'center',
   },
 
   cardTitle: {
-    fontWeight: 'bold',
     fontSize: 18,
-    marginBottom: 4,
-    color: '#333',
+    fontWeight: 'bold',
   },
-  description: {
-    color: '#555',
+
+  cardDescription: {
     fontSize: 14,
-    marginBottom: 4,
+    color: '#666',
   },
-  price: {
+
+  cardValue: {
+    marginTop: 8,
     fontWeight: 'bold',
-    color: '#06C823',
-    fontSize: 16,
-    marginBottom: 6,
   },
-  tagsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 6,
-  },
-  tag: {
-    backgroundColor: '#06C823',
-    color: '#fff',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-    marginRight: 8,
-    marginTop: 4,
+
+  cardTag: {
     fontSize: 12,
-  },
-
-  deleteBtn: {
-    backgroundColor: '#D11A2A',
-    borderRadius: 8,
-    paddingVertical: 10,
-    alignItems: 'center',
-    marginTop: 6,
-  },
-  deleteBtnText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    paddingBottom: 40,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-
-  label: {
-    fontWeight: '600',
-    fontSize: 16,
-    marginBottom: 4,
-    color: '#333',
-  },
-
-  input: {
-    borderWidth: 1,
-    borderColor: '#aaa',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  error: {
-    color: 'red',
-    marginBottom: 6,
-  },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-    justifyContent: 'space-between',
-  },
-  switchLabel: {
-    fontSize: 16,
-    fontWeight: '600',
     color: '#444',
   },
 
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  confirmButton: {
-    backgroundColor: '#06C823',
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  confirmButtonText: {
-    color: '#fff',
+  cardStatus: {
+    marginTop: 4,
+    fontSize: 12,
     fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cancelButton: {
-    backgroundColor: '#aaa',
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginLeft: 8,
-  },
-  cancelButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    color: '#666',
   },
 
-  fab: {
+  addButton: {
     position: 'absolute',
-    right: 16,
-    bottom: 16,
+    right: 24,
+    bottom: 24,
+    backgroundColor: '#06C823',
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#06C823',
-    alignItems: 'center',
     justifyContent: 'center',
-    elevation: 6,
+    alignItems: 'center',
   },
-  fabText: {
+
+  addButtonText: {
     fontSize: 28,
     color: '#fff',
     fontWeight: 'bold',
   },
 
-  imagePicker: {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+  },
+
+  modalContent: {
+    backgroundColor: '#fff',
+    marginHorizontal: 24,
+    borderRadius: 12,
+    padding: 16,
+  },
+
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+
+  label: {
+    fontWeight: 'bold',
+    marginTop: 12,
+  },
+
+  input: {
     borderWidth: 1,
-    borderColor: '#aaa',
-    borderRadius: 10,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginTop: 4,
+  },
+
+  picker: {
+    marginTop: 4,
+  },
+
+  error: {
+    color: 'red',
+    marginTop: 4,
+  },
+
+  imagePicker: {
     height: 150,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fafafa',
   },
+
   imagePreview: {
     width: '100%',
-    height: '100%',
-    borderRadius: 10,
+    height: 150,
+    borderRadius: 6,
+  },
+
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+
+  switchLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  confirmButton: {
+    flex: 1,
+    backgroundColor: '#06C823',
+    paddingVertical: 12,
+    borderRadius: 6,
+    marginRight: 8,
+    alignItems: 'center',
+  },
+
+  confirmButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+
+  cancelButton: {
+    flex: 1,
+    backgroundColor: '#999',
+    paddingVertical: 12,
+    borderRadius: 6,
+    marginLeft: 8,
+    alignItems: 'center',
+  },
+
+  cancelButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+
+  deleteIconButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    padding: 4,
+    zIndex: 10,
+  },
+
+  deleteButton: {
+    marginTop: 16,
+    backgroundColor: '#cc0000',
+    paddingVertical: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+
+  deleteButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });

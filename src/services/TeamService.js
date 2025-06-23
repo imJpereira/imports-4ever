@@ -35,3 +35,12 @@ export async function deleteTeam(id) {
     return { error: error.message }
   }
 }
+
+export async function searchTeamsByName(name) {
+  try {
+    const response = await gatewayApi.get(`/teams/like/${name}`)
+    return { teams: response.data, error: null }
+  } catch (error) {
+    return { error: error.message }
+  }
+}

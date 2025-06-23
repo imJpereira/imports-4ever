@@ -1,52 +1,83 @@
-import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { View, FlatList, Text, TouchableOpacity, Alert, TextInput, StyleSheet } from 'react-native'
 import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
-import { colors, metrics, typography } from '../../../assets/js/theme'
 import SearchBar from '../../components/SearchBar'
+import {
+  getSports,
+  searchSportsByName,
+  createSport,
+  updateSport,
+  deleteSport,
+} from '../../services/SportService'
 
-export default function TeamCreateScreen({ navigation }) {
+export default function SportCreateScreen() {
   const [formVisible, setFormVisible] = useState(false)
-  const [teams, setTeams] = useState([])
+  const [sports, setSports] = useState([])
   const [form, setForm] = useState({ nome: '' })
-  const [editingIndex, setEditingIndex] = useState(null)
+  const [editingSportId, setEditingSportId] = useState(null)
   const [searchText, setSearchText] = useState('')
+
+  useEffect(() => {
+    loadSports()
+  }, [])
+
+  const loadSports = async () => {
+    const { sports, error } = await getSports()
+    if (!error) setSports(sports)
+    else Alert.alert('Erro', 'Erro ao carregar os esportes')
+  }
 
   const handleChange = value => setForm({ nome: value })
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.nome.trim()) {
       Alert.alert('Erro', 'O nome do esporte não pode estar vazio.')
       return
     }
-    if (editingIndex !== null) {
-      const updated = [...teams]
-      updated[editingIndex] = form
-      setTeams(updated)
-    } else {
-      setTeams([...teams, form])
+
+    const { error } = editingSportId
+      ? await updateSport(editingSportId, form)
+      : await createSport(form)
+
+    if (error) {
+      Alert.alert('Erro', error)
+      return
     }
+
     setForm({ nome: '' })
-    setEditingIndex(null)
+    setEditingSportId(null)
     setFormVisible(false)
+    await loadSports()
   }
 
-  const handleEdit = index => {
-    setForm(teams[index])
-    setEditingIndex(index)
+  const handleEdit = sport => {
+    setForm({ nome: sport.name })
+    setEditingSportId(sport.id)
     setFormVisible(true)
   }
 
-  const handleDelete = index => {
-    const updated = teams.filter((_, i) => i !== index)
-    setTeams(updated)
+  const handleDelete = async id => {
+    const { error } = await deleteSport(id)
+    if (error) Alert.alert('Erro', error)
+    else await loadSports()
   }
 
-  const renderItem = ({ item, index }) => (
-    <Animated.View entering={FadeInDown} style={styles.card}>
-      <TouchableOpacity onPress={() => handleEdit(index)} style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{item.nome}</Text>
+  const handleSearch = async () => {
+    if (!searchText.trim()) {
+      await loadSports()
+    } else {
+      const { sports, error } = await searchSportsByName(searchText)
+      if (!error) setSports(sports)
+      else Alert.alert('Erro', 'Erro na busca')
+    }
+  }
+
+  const renderItem = ({ item }) => (
+    <Animated.View entering={FadeInDown} exiting={FadeOutUp}>
+      <TouchableOpacity onPress={() => handleEdit(item)} style={styles.cardContent}>
+        <Text style={styles.cardTitle}>{item.name}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(index)}>
+      <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteBtn}>
         <Text style={styles.deleteText}>EXCLUIR</Text>
       </TouchableOpacity>
     </Animated.View>
@@ -54,11 +85,7 @@ export default function TeamCreateScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <SearchBar
-        value={searchText}
-        onChangeText={setSearchText}
-        onSearch={() => {}}
-      />
+      <SearchBar value={searchText} onChangeText={setSearchText} onSearch={handleSearch} />
 
       {formVisible && (
         <Animated.View
@@ -68,36 +95,41 @@ export default function TeamCreateScreen({ navigation }) {
         >
           <TextInput
             placeholder="Nome do esporte"
-            placeholderTextColor={colors.textPrimary}
+            placeholderTextColor="#666"
             value={form.nome}
             onChangeText={handleChange}
             style={styles.input}
           />
           <View style={styles.formButtons}>
-            <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
+            <TouchableOpacity onPress={handleSubmit} style={styles.submitBtn}>
               <Text style={styles.submitText}>
-                {editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}
+                {editingSportId ? 'ATUALIZAR' : 'CADASTRAR'}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.cancelBtn}
               onPress={() => {
                 setForm({ nome: '' })
                 setFormVisible(false)
-                setEditingIndex(null)
+                setEditingSportId(null)
               }}
+              style={styles.cancelBtn}
             >
               <Text style={styles.cancelText}>CANCELAR</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
       )}
+
       <FlatList
-        data={teams}
-        keyExtractor={(_, index) => index.toString()}
+        data={sports}
+        keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
-        contentContainerStyle={teams.length === 0 ? styles.emptyList : null}
+        contentContainerStyle={sports.length === 0 ? styles.emptyList : null}
+        ListEmptyComponent={
+          <Text style={styles.emptyMessage}>Nenhum esporte encontrado</Text>
+        }
       />
+
       {!formVisible && (
         <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.fab}>
           <Text style={styles.fabText}>+</Text>
@@ -110,101 +142,100 @@ export default function TeamCreateScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: metrics.spacing,
-    backgroundColor: colors.background,
+    backgroundColor: '#f9f9f9',
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   formContainer: {
-    marginBottom: metrics.spacing,
+    marginBottom: 16,
+    paddingHorizontal: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: metrics.borderRadius,
-    padding: metrics.spacing * 0.75,
-    marginBottom: metrics.spacing * 0.5,
-    backgroundColor: colors.inputBackground,
-    fontSize: typography.fontSizeNormal,
-    color: colors.textPrimary,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    fontSize: 16,
+    backgroundColor: '#fff',
+    color: '#333',
   },
   formButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   submitBtn: {
-    backgroundColor: colors.primary,
-    padding: metrics.spacing * 0.75,
-    borderRadius: metrics.borderRadius,
+    backgroundColor: '#06C823',
     flex: 1,
-    marginRight: metrics.spacing * 0.5,
+    marginRight: 8,
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: 'center',
   },
   submitText: {
-    color: colors.textOnPrimary,
-    fontWeight: typography.fontWeightBold,
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   cancelBtn: {
-    backgroundColor: colors.danger,
-    padding: metrics.spacing * 0.75,
-    borderRadius: metrics.borderRadius,
+    backgroundColor: '#999',
     flex: 1,
-    marginLeft: metrics.spacing * 0.5,
+    marginLeft: 8,
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: 'center',
   },
   cancelText: {
-    color: colors.textOnPrimary,
-    fontWeight: typography.fontWeightBold,
-  },
-  card: {
-    backgroundColor: colors.cardBackground,
-    padding: metrics.spacing * 0.75,
-    borderRadius: metrics.borderRadius,
-    marginBottom: metrics.spacing * 0.5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   cardContent: {
-    paddingVertical: metrics.spacing * 0.5,
+    paddingVertical: 12,
+    alignItems: 'center',
   },
   cardTitle: {
-    fontSize: typography.fontSizeTitle,
-    fontWeight: typography.fontWeightBold,
-    textAlign: 'center',
-    color: colors.textPrimary,
+    fontSize: 18,
+    color: '#222',
   },
   deleteBtn: {
-    marginTop: metrics.spacing * 0.5,
-    backgroundColor: colors.danger,
-    borderRadius: metrics.borderRadius,
-    paddingVertical: metrics.spacing * 0.5,
-    alignItems: 'center',
+    backgroundColor: 'red',
+    borderRadius: 6,
+    paddingVertical: 6,
+    marginHorizontal: 16,
+    marginBottom: 8,
   },
   deleteText: {
-    color: colors.textOnPrimary,
-    fontWeight: typography.fontWeightBold,
-  },
-  fab: {
-    position: 'absolute',
-    right: metrics.spacing,
-    bottom: metrics.spacing,
-    backgroundColor: colors.primary,
-    width: metrics.fabSize,
-    height: metrics.fabSize,
-    borderRadius: metrics.fabSize / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 4,
-  },
-  fabText: {
-    color: colors.textOnPrimary,
-    fontSize: typography.fontSizeTitle,
-    fontWeight: typography.fontWeightBold,
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   emptyList: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  emptyMessage: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
+    color: '#555',
+  },
+  fab: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    backgroundColor: '#06C823',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+  },
+  fabText: {
+    color: '#fff',
+    fontSize: 30,
+    fontWeight: 'bold',
   },
 })

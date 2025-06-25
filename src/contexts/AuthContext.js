@@ -12,7 +12,9 @@ export default function AuthProvider({children}) {
         //para teste:
         credentials = {
             id: "5b89267f-86e2-4eda-a51a-0a30584a20c3",
-            name: "meu amorrrrr"
+            name: "meu amorrrrr",
+            type: 1 
+            // 0:admin 1:comum
         }
 
         //fazer requisição para o backend validando as credenciais

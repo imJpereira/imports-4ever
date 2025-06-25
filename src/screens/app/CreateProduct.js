@@ -27,7 +27,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-  getProductsByName,
+  searchProductsByName,
 } from '../../services/ProductService';
 
 const placeholderImage = 'https://via.placeholder.com/150';
@@ -76,7 +76,7 @@ export default function ProductScreen() {
 
   async function handleSearch() {
     if (!searchText.trim()) return fetchProductsList();
-    const { products: results } = await getProductsByName(searchText);
+    const { products: results } = await searchProductsByName(searchText.toLocaleLowerCase());
     setProducts(results || []);
   }
 

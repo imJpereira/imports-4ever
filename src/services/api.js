@@ -13,10 +13,10 @@ import axios from 'axios'
 //}) 
 
 // conexão casa alex
-  export const gatewayApi = axios.create({
-    baseURL: 'http://192.168.0.11:8765', 
-    timeout: 5000,
- })
+//export const gatewayApi = axios.create({
+//baseURL: 'http://192.168.0.11:8765', 
+//timeout: 5000,
+//})
 
 
 // ==== CONEXÕES FORA DO GATEWAY =====
@@ -37,5 +37,11 @@ import axios from 'axios'
 //   baseURL: 'http://189.30.255.90:8000', 
 //   timeout: 5000,
 //}) 
+
+// conexão docker pereira 2
+export const gatewayApi = axios.create({
+  baseURL: 'http://10.1.201.200:8765', 
+  timeout: 5000,
+})
 
 

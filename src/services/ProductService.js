@@ -27,13 +27,17 @@ export async function searchProductsByName(name) {
   }
 }
 
+
 export async function createProduct(product) {
   try {
     const payload = {
       ...product,
       discountValue: 0,
     };
+
+    
     const response = await gatewayApi.post('/products/create', payload);
+
     return { product: response.data, error: null };
   } catch (error) {
     console.log('Erro ao criar produto:', error.response?.data);

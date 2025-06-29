@@ -1,16 +1,26 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { useAuth } from '../../contexts/AuthContext';
 
-
 export default function SignInScreen({ navigation }) {
-
   const { signIn } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSignIn = async () => {
-      await signIn();
-  }
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Erro', 'Informe email e senha');
+      return;
+    }
+
+    try {
+      await signIn({ email, password });
+   
+    } catch (error) {
+      Alert.alert('Erro', 'Usuário ou senha inválidos');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -19,19 +29,35 @@ export default function SignInScreen({ navigation }) {
 
       <View style={styles.inputContainer}>
         <AntDesign name="mail" size={20} color="gray" style={styles.icon} />
-        <TextInput placeholder="Digite seu email:" style={styles.input} keyboardType="email-address" />
+        <TextInput
+          placeholder="Digite seu email:"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          style={styles.input}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
       </View>
 
       <View style={styles.inputContainer}>
         <Feather name="lock" size={20} color="gray" style={styles.icon} />
-        <TextInput placeholder="Senha:" style={styles.input} secureTextEntry />
+        <TextInput
+          placeholder="Senha:"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
       </View>
 
       <TouchableOpacity>
         <Text style={styles.forgotText}>Esqueceu sua senha?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => handleSignIn()}>
+      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Acessar</Text>
       </TouchableOpacity>
 

@@ -1,35 +1,36 @@
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 
-export default function ProductCard({product, onPress}) {
+export default function ProductCard({ product, onPress }) {
     
     function formatMoney(valor) {
+        if (typeof valor !== 'number' || isNaN(valor)) {
+            return 'R$ 0,00';
+        }
         return `R$ ${valor.toFixed(2).replace('.', ',')}`;
-      }      
+    }      
 
     return (
         <Pressable
             onPress={onPress} 
             style={styles.productContainer}
-            >
+        >
             <View style={styles.imageContainer}>
                 <Image
                     style={styles.image}
                     source={{
-                        uri: product.image
+                        uri: product.image || 'https://via.placeholder.com/150', // placeholder se não tiver imagem
                     }}
                 />
             </View>
             <View style={styles.infoContainer}>
-                <Text numberOfLines={2} style={styles.productName}>{product.name}</Text>
-                <Text numberOfLines={1}>{formatMoney(product.price)}</Text>
+                <Text numberOfLines={2} style={styles.productName}>{product.name || 'Sem nome'}</Text>
+                <Text numberOfLines={1}>{formatMoney(product.value ?? product.price)}</Text>
             </View>
         </Pressable>
-
     );
 }
 
 const styles = StyleSheet.create({
-
     imageContainer: {
         alignItems: 'center',
         height: '70%',
@@ -55,5 +56,4 @@ const styles = StyleSheet.create({
     productName: {
         fontSize: 18
     }
-
-}); 
+});

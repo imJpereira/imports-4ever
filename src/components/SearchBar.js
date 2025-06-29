@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 8,
         flexDirection: 'row',
-    // backgroundColor: '#06C823',
+    
     },
     input: {
         backgroundColor: '#ffffff',

@@ -27,7 +27,6 @@ export async function createOrder(order) {
   }
 }
 
-// Como você não mencionou um DELETE explícito para pedidos, se precisar, pode ser criado aqui.
 
 function extractError(error) {
   return (

@@ -36,12 +36,17 @@ export default function AccountScreen() {
     setIsEditing(false);
   };
 
+  const handleLogout = () => {
+    navigation.navigate('SignInScreen');
+  };
+
   return (
     <ScrollView style={styles.container}>
+
       <View style={styles.userInfo}>
         <Ionicons name="person-circle-outline" size={70} color="#999" />
         <View style={{ flex: 1, marginLeft: 15 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={styles.greetingRow}>
             {isEditing ? (
               <TextInput
                 style={styles.input}
@@ -56,8 +61,13 @@ export default function AccountScreen() {
                 Olá, <Text style={{ fontWeight: 'bold' }}>{user.name}</Text>
               </Text>
             )}
-            <TouchableOpacity onPress={toggleEditing} style={{ marginLeft: 8 }}>
-              <Feather name="edit-2" size={20} color="gray" />
+
+            <TouchableOpacity onPress={toggleEditing} style={styles.iconButton}>
+              <Feather name="edit-2" size={24} color="gray" style={styles.iconAdjust} />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={handleLogout} style={styles.iconButton}>
+              <Feather name="log-out" size={24} color="gray" style={styles.iconAdjust} />
             </TouchableOpacity>
           </View>
           <Text style={styles.registerDate}>Cadastrado em 18/03/2025</Text>
@@ -73,7 +83,11 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Meus pedidos</Text>
           <Text style={styles.optionSubtitle}>Acompanhe seus pedidos aqui</Text>
         </View>
-        <Feather name="chevron-right" size={24} color="#06C823" />
+        <Feather
+          name="chevron-right"
+          size={24}
+          color="#06C823"
+        />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.option}>
@@ -82,7 +96,11 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Avalie nosso aplicativo</Text>
           <Text style={styles.optionSubtitle}>Sua opinião é importante para nós!</Text>
         </View>
-        <Feather name="chevron-right" size={24} color="#06C823" />
+        <Feather
+          name="chevron-right"
+          size={24}
+          color="#06C823"
+        />
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -94,7 +112,11 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Dados Pessoais</Text>
           <Text style={styles.optionSubtitle}>Gerencie suas informações com segurança.</Text>
         </View>
-        <Feather name="chevron-right" size={24} color="#06C823" />
+        <Feather
+          name="chevron-right"
+          size={24}
+          color="#06C823"
+        />
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -106,7 +128,11 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Cadastro de Produto</Text>
           <Text style={styles.optionSubtitle}>Adicione novos produtos ao sistema.</Text>
         </View>
-        <Feather name="chevron-right" size={24} color="#06C823" />
+        <Feather
+          name="chevron-right"
+          size={24}
+          color="#06C823"
+        />
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -118,7 +144,11 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Cadastro de Categoria</Text>
           <Text style={styles.optionSubtitle}>Organize os produtos por categorias.</Text>
         </View>
-        <Feather name="chevron-right" size={24} color="#06C823" />
+        <Feather
+          name="chevron-right"
+          size={24}
+          color="#06C823"
+        />
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -130,7 +160,11 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Cadastro de Times</Text>
           <Text style={styles.optionSubtitle}>Configure os times disponíveis no app.</Text>
         </View>
-        <Feather name="chevron-right" size={24} color="#06C823" />
+        <Feather
+          name="chevron-right"
+          size={24}
+          color="#06C823"
+        />
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -142,7 +176,11 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Cadastro de Esportes</Text>
           <Text style={styles.optionSubtitle}>Gerencie os tipos de esportes cadastrados.</Text>
         </View>
-        <Feather name="chevron-right" size={24} color="#06C823" />
+        <Feather
+          name="chevron-right"
+          size={24}
+          color="#06C823"
+        />
       </TouchableOpacity>
 
       <Text style={styles.version}>Versão 1.0</Text>
@@ -152,14 +190,11 @@ export default function AccountScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 20 },
-  headerContainer: {
+  userInfo: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+  greetingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
   },
-  header: { fontSize: 20, fontWeight: 'bold', color: '#06C823' },
-  userInfo: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
   userName: { fontSize: 20 },
   registerDate: { fontSize: 14, color: '#666' },
   input: {
@@ -169,6 +204,13 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 4,
     minWidth: 100,
+  },
+  iconButton: {
+    marginLeft: 8,
+    padding: 4,
+  },
+  iconAdjust: {
+    marginTop: 4,
   },
   option: {
     flexDirection: 'row',
@@ -180,5 +222,5 @@ const styles = StyleSheet.create({
   optionText: { flex: 1, marginLeft: 10 },
   optionTitle: { fontSize: 16, fontWeight: 'bold', color: '#000' },
   optionSubtitle: { fontSize: 14, color: '#666' },
-  version: { textAlign: 'center', color: '#666' },
+  version: { textAlign: 'center', color: '#666', marginTop: 20 },
 });

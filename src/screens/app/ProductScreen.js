@@ -1,232 +1,97 @@
-import { View,StyleSheet,FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, FlatList, Text } from "react-native";
+import { useRoute } from "@react-navigation/native";
+
 import ProductCard from "../../components/ProductCard";
 import SearchBar from "../../components/SearchBar";
-import { useState } from "react";
 
-export default function ProductScreen({navigation}) {
+import {
+  getProducts,
+  searchProductsByName,
+  getProductsByCategory,
+  getProductsBySport,
+  getProductsByTeam,
+} from "../../services/ProductService";
 
-    const products = [
-        {
-          id: 1,
-          name: "Camisa do Brasil",
-          description: "Camisa oficial da seleção brasileira 2024",
-          review: 4.5,
-          price: 199.90,
-          discount: 20,
-          finalPrice: 159.92,
-          category: "Futebol",
-          brand: "Nike",
-          stock: 25,
-          image: "https://acdn-us.mitiendanube.com/stores/001/055/309/products/376fad4f1-57ca58960a0e7750d116645796652096-1024-1024.jpeg",
-          tags: ["camisa", "seleção", "brasil"],
-          createdAt: "2025-05-10",
-          updatedAt: "2025-05-11",
-          isAvailable: true,
-          soldCount: 132
-        },
-        {
-          id: 2,
-          name: "Camisa do Real Madrid",
-          description: "Camisa branca tradicional do Real Madrid temporada 23/24",
-          review: 4.7,
-          price: 249.90,
-          discount: 15,
-          finalPrice: 212.42,
-          category: "Futebol",
-          brand: "Adidas",
-          stock: 40,
-          image: "https://acdn-us.mitiendanube.com/stores/001/402/723/products/46ad91371-749d1d84e172a0717516752739475657-640-0.jpg",
-          tags: ["camisa", "real madrid", "espanha"],
-          createdAt: "2025-04-20",
-          updatedAt: "2025-05-01",
-          isAvailable: true,
-          soldCount: 95
-        },
-        {
-          id: 3,
-          name: "Camisa do Flamengo",
-          description: "Camisa rubro-negra retro 1990",
-          review: 4.6,
-          price: 189.90,
-          discount: 10,
-          finalPrice: 170.91,
-          category: "Futebol",
-          brand: "Adidas",
-          stock: 30,
-          image: "https://acdn-us.mitiendanube.com/stores/002/499/697/products/861-bd968d5ac7fe3915a516898772451723-1024-1024.jpg",
-          tags: ["flamengo", "brasileirão", "camisa"],
-          createdAt: "2025-03-15",
-          updatedAt: "2025-04-01",
-          isAvailable: true,
-          soldCount: 210
-        },
-        {
-          id: 4,
-          name: "Camisa do Barcelona",
-          description: "Camisa preta 2024",
-          review: 4.8,
-          price: 229.90,
-          discount: 18,
-          finalPrice: 188.52,
-          category: "Futebol",
-          brand: "Nike",
-          stock: 22,
-          image: "https://acdn-us.mitiendanube.com/stores/001/055/309/products/camisa-do-barcelona-nike-2024-2025-away-2-fora-reserva-ii-segunda-preta-vermelha-azul-torcedor-masculina-homem-uniforme-original-oficial-lancamento-nova-qualidade-roque-1-78a9a4646481b1866517181507277091-1024-1024.jpg",
-          tags: ["barcelona", "espanha", "camisa"],
-          createdAt: "2025-04-10",
-          updatedAt: "2025-05-10",
-          isAvailable: true,
-          soldCount: 160
-        },
-        // {
-        //   id: 5,
-        //   name: "Camisa do Manchester United",
-        //   description: "Camisa vermelha oficial 2024 com escudo bordado",
-        //   review: 4.3,
-        //   price: 219.90,
-        //   discount: 25,
-        //   finalPrice: 164.92,
-        //   category: "Futebol",
-        //   brand: "Adidas",
-        //   stock: 35,
-        //   images: ["/images/manunited-1.jpg"],
-        //   tags: ["manchester", "camisa", "premier league"],
-        //   createdAt: "2025-03-30",
-        //   updatedAt: "2025-04-15",
-        //   isAvailable: true,
-        //   soldCount: 85
-        // },
-        // {
-        //   id: 6,
-        //   name: "Camisa do Palmeiras",
-        //   description: "Camisa verde com detalhes dourados 2024",
-        //   review: 4.9,
-        //   price: 199.90,
-        //   discount: 10,
-        //   finalPrice: 179.91,
-        //   category: "Futebol",
-        //   brand: "Puma",
-        //   stock: 28,
-        //   images: ["/images/palmeiras-1.jpg"],
-        //   tags: ["palmeiras", "camisa", "brasileirão"],
-        //   createdAt: "2025-05-01",
-        //   updatedAt: "2025-05-08",
-        //   isAvailable: true,
-        //   soldCount: 105
-        // },
-        // {
-        //   id: 7,
-        //   name: "Camisa da Argentina",
-        //   description: "Camisa oficial campeã da Copa do Mundo 2022",
-        //   review: 4.4,
-        //   price: 239.90,
-        //   discount: 20,
-        //   finalPrice: 191.92,
-        //   category: "Futebol",
-        //   brand: "Adidas",
-        //   stock: 18,
-        //   images: ["/images/argentina-1.jpg"],
-        //   tags: ["argentina", "seleção", "camisa"],
-        //   createdAt: "2025-04-05",
-        //   updatedAt: "2025-04-12",
-        //   isAvailable: true,
-        //   soldCount: 140
-        // },
-        // {
-        //   id: 8,
-        //   name: "Camisa do PSG",
-        //   description: "Camisa azul com detalhes vermelhos da temporada 2024",
-        //   review: 4.2,
-        //   price: 219.90,
-        //   discount: 12,
-        //   finalPrice: 193.51,
-        //   category: "Futebol",
-        //   brand: "Nike",
-        //   stock: 26,
-        //   images: ["/images/psg-1.jpg"],
-        //   tags: ["psg", "camisa", "mbappé"],
-        //   createdAt: "2025-03-20",
-        //   updatedAt: "2025-04-01",
-        //   isAvailable: true,
-        //   soldCount: 78
-        // },
-        // {
-        //   id: 9,
-        //   name: "Camisa do Corinthians",
-        //   description: "Camisa branca com detalhes pretos 2024",
-        //   review: 4.1,
-        //   price: 189.90,
-        //   discount: 15,
-        //   finalPrice: 161.42,
-        //   category: "Futebol",
-        //   brand: "Nike",
-        //   stock: 32,
-        //   images: ["/images/corinthians-1.jpg"],
-        //   tags: ["corinthians", "brasil", "camisa"],
-        //   createdAt: "2025-04-25",
-        //   updatedAt: "2025-05-05",
-        //   isAvailable: true,
-        //   soldCount: 120
-        // },
-        // {
-        //   id: 10,
-        //   name: "Camisa do Chelsea",
-        //   description: "Camisa azul royal com logo dourado 2024",
-        //   review: 4.0,
-        //   price: 209.90,
-        //   discount: 10,
-        //   finalPrice: 188.91,
-        //   category: "Futebol",
-        //   brand: "Nike",
-        //   stock: 20,
-        //   images: ["/images/chelsea-1.jpg"],
-        //   tags: ["chelsea", "camisa", "inglaterra"],
-        //   createdAt: "2025-03-28",
-        //   updatedAt: "2025-04-10",
-        //   isAvailable: true,
-        //   soldCount: 66
-        // },
-        // {
-        //   id: 11,
-        //   name: "Camisa da Alemanha",
-        //   description: "Camisa branca com listras pretas 2024",
-        //   review: 4.6,
-        //   price: 229.90,
-        //   discount: 18,
-        //   finalPrice: 188.52,
-        //   category: "Futebol",
-        //   brand: "Adidas",
-        //   stock: 15,
-        //   images: ["/images/alemanha-1.jpg"],
-        //   tags: ["alemanha", "camisa", "seleção"],
-        //   createdAt: "2025-04-18",
-        //   updatedAt: "2025-05-02",
-        //   isAvailable: true,
-        //   soldCount: 74
-        // }
-      ];
+export default function ProductScreen({ navigation }) {
+  const route = useRoute();
+  const { categoryId, sportId, teamId, search } = route.params || {};
 
-    const [searchText, setSearchText] = useState();
+  const [products, setProducts] = useState([]);
+  const [searchText, setSearchText] = useState(search || "");
+  const [error, setError] = useState(null);
 
-    return (
-        <View>
-            <SearchBar 
-              value={searchText} 
-              onChangeText={setSearchText}
-              onSearch={() => console.log("jurooooo") }
-            />
-            <FlatList 
-                data={products}
-                numColumns={2}
-                keyExtractor={(item) => item.name}
-                renderItem={({item}) => {
-                    return <ProductCard
-                            product={{...item}}
-                            onPress={() => navigation.navigate("ProductDetailsScreen")} 
-                            />
-                }}                
-            />  
-        </View>
-    );
+  async function fetchProducts() {
+    let response;
+
+    if (categoryId) {
+      response = await getProductsByCategory(categoryId);
+    } else if (sportId) {
+      response = await getProductsBySport(sportId);
+    } else if (teamId) {
+      response = await getProductsByTeam(teamId);
+    } else if (searchText.trim() !== "") {
+      response = await searchProductsByName(searchText);
+    } else {
+      response = await getProducts();
+    }
+
+    const { products, error } = response;
+
+    if (error) {
+      setError(error);
+      setProducts([]);
+    } else {
+      setProducts(products.filter(p => p.status === "ATIVO"));
+    }
+  }
+
+  async function handleSearch() {
+    fetchProducts();
+  }
+
+  useEffect(() => {
+    fetchProducts();
+  }, [categoryId, sportId, teamId, searchText]);
+
+  function renderEmpty() {
+    return <Text style={styles.emptyText}>Nenhum produto encontrado.</Text>;
+  }
+
+  return (
+    <View style={{ flex: 1 }}>
+      <SearchBar
+        value={searchText}
+        onChangeText={setSearchText}
+        onSearch={handleSearch}
+      />
+      <FlatList
+        data={products}
+        numColumns={2}
+        ListEmptyComponent={renderEmpty}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <ProductCard
+            product={{
+              name: item.name,
+              image: item.url,
+              price: item.value,
+            }}
+            onPress={() =>
+              navigation.navigate("ProductDetailsScreen", { productId: item.id })
+            }
+          />
+        )}
+      />
+    </View>
+  );
 }
 
+const styles = StyleSheet.create({
+  emptyText: {
+    textAlign: "center",
+    marginTop: 40,
+    fontSize: 16,
+    color: "#666",
+  },
+});

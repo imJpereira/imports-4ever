@@ -115,18 +115,19 @@ export default function ProductScreen() {
 
     if (Object.keys(newErrors).length > 0) return;
 
-    const payload = {
-      name: tempForm.name,
-      description: tempForm.description,
-      value: Number(tempForm.value),
-      url: tempForm.imageUrl,
-      team: tempForm.team,
-      category: tempForm.category,
-      sport: tempForm.sport,
-      status: tempForm.active ? 'ATIVO' : 'INATIVO',
-      highlight: tempForm.highlight,
-      discountValue: 0,
-    };
+      const payload = {
+    name: form.name,
+    description: form.description,
+    value: Number(form.value),
+    url: form.imageUrl,
+    team: form.team,
+    category: form.category,
+    sport: form.sport,
+    status: form.active ? 'ATIVO' : 'INATIVO',
+    highlight: form.highlight,
+    discountValue: 0,
+  };
+
 
     try {
       if (editingIndex !== null) {
@@ -146,37 +147,39 @@ export default function ProductScreen() {
   }
 
   function handleEdit(index) {
-    const p = products[index];
-    setForm({
-      name: p.name,
-      description: p.description,
-      value: p.value.toString(),
-      team: p.team,
-      category: p.category,
-      sport: p.sport,
-      active: p.status === 'ATIVO',
-      highlight: p.highlight,
-      imageUrl: p.url,
-    });
-    setEditingIndex(index);
-    setFormVisible(true);
-  }
+  const p = products[index];
+  setForm({
+    name: p.name,
+    description: p.description,
+    value: p.value.toString(),
+    team: p.team?.id || null,
+    category: p.category?.id || null,
+    sport: p.sport?.id || null,
+    active: p.status === 'ATIVO',
+    highlight: p.highlight,
+    imageUrl: p.url,
+  });
+  setEditingIndex(index);
+  setFormVisible(true);
+}
+
 
   const resetForm = () => {
-    setForm({
-      name: '',
-      description: '',
-      value: '',
-      team: null,
-      category: null,
-      sport: null,
-      active: false,
-      highlight: false,
-      imageUrl: null,
-    });
-    setErrors({});
-    setEditingIndex(null);
-  };
+  setForm({
+    name: '',
+    description: '',
+    value: '',
+    team: null,
+    category: null,
+    sport: null,
+    active: false,
+    highlight: false,
+    imageUrl: null,
+  });
+  setErrors({});
+  setEditingIndex(null);
+};
+
 
   async function pickImage() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -320,7 +323,7 @@ export default function ProductScreen() {
               numberOfLines={3}
             />
 
-            <Text style={styles.label}>Valor unitário</Text>
+            <Text style={styles.label}>Valor unitário em BRL</Text>
             <TextInput
               style={styles.input}
               placeholder="Digite o valor"

@@ -1,225 +1,215 @@
-import React, { useState, useEffect } from 'react'
-import { View, FlatList, Text, TouchableOpacity, Alert, TextInput, StyleSheet } from 'react-native'
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated'
-import SearchBar from '../../components/SearchBar'
+import React, { useState, useEffect } from 'react';
 import {
-  getSports,
-  searchSportsByName,
-  createSport,
-  updateSport,
-  deleteSport,
-} from '../../services/SportService'
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  StyleSheet,
+  Alert,
+  Dimensions,
+  Modal,
+  ScrollView
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
+import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import SearchBar from '../../components/SearchBar';
+import { getSports, createSport, updateSport, deleteSport, searchSportsByName } from '../../services/SportService';
+import { uploadImage } from '../../services/imageService';
 
-export default function SportCreateScreen() {
-  const [formVisible, setFormVisible] = useState(false)
-  const [sports, setSports] = useState([])
-  const [form, setForm] = useState({ nome: '' })
-  const [editingSportId, setEditingSportId] = useState(null)
-  const [searchText, setSearchText] = useState('')
+const placeholderImage = 'https://via.placeholder.com/100';
+
+export default function SportScreen() {
+  const [sports, setSports] = useState([]);
+  const [formVisible, setFormVisible] = useState(false);
+  const [form, setForm] = useState({ name: '', url: null });
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [searchText, setSearchText] = useState('');
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    loadSports()
-  }, [])
+    loadSports();
+  }, []);
 
-  const loadSports = async () => {
-    const { sports, error } = await getSports()
-    if (!error) setSports(sports)
-    else Alert.alert('Erro', 'Erro ao carregar os esportes')
+  async function loadSports() {
+    const { sports: data } = await getSports();
+    setSports(data || []);
   }
 
-  const handleChange = value => setForm({ nome: value })
+  async function handleSearch() {
+    if (!searchText.trim()) return loadSports();
+    const { sports: results } = await searchSportsByName(searchText.trim());
+    setSports(results || []);
+  }
 
-  const handleSubmit = async () => {
-    if (!form.nome.trim()) {
-      Alert.alert('Erro', 'O nome do esporte não pode estar vazio.')
-      return
+  async function pickImage() {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('Permissão necessária', 'Acesso à galeria é obrigatório.');
+      return;
     }
 
-    const { error } = editingSportId
-      ? await updateSport(editingSportId, form)
-      : await createSport(form)
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.7,
+    });
 
-    if (error) {
-      Alert.alert('Erro', error)
-      return
-    }
-
-    setForm({ nome: '' })
-    setEditingSportId(null)
-    setFormVisible(false)
-    await loadSports()
-  }
-
-  const handleEdit = sport => {
-    setForm({ nome: sport.name })
-    setEditingSportId(sport.id)
-    setFormVisible(true)
-  }
-
-  const handleDelete = async id => {
-    const { error } = await deleteSport(id)
-    if (error) Alert.alert('Erro', error)
-    else await loadSports()
-  }
-
-  const handleSearch = async () => {
-    if (!searchText.trim()) {
-      await loadSports()
-    } else {
-      const { sports, error } = await searchSportsByName(searchText)
-      if (!error) setSports(sports)
-      else Alert.alert('Erro', 'Erro na busca')
+    if (!result.canceled) {
+      try {
+        const url = await uploadImage(result.assets[0].uri);
+        setForm(prev => ({ ...prev, url }));
+      } catch {
+        Alert.alert('Erro', 'Falha no upload da imagem.');
+      }
     }
   }
 
-  const renderItem = ({ item }) => (
-    <Animated.View entering={FadeInDown} exiting={FadeOutUp}>
-      <TouchableOpacity onPress={() => handleEdit(item)} style={styles.cardContent}>
+  async function handleSubmit() {
+    const newErrors = {};
+    if (!form.name.trim()) newErrors.name = 'Nome obrigatório';
+    if (!form.url) newErrors.url = 'Imagem obrigatória';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
+    const payload = { name: form.name.trim(), url: form.url };
+    try {
+      if (editingIndex !== null) {
+        const { sport } = await updateSport(sports[editingIndex].id, payload);
+        const updated = [...sports];
+        updated[editingIndex] = sport;
+        setSports(updated);
+      } else {
+        const { sport } = await createSport(payload);
+        setSports(prev => [...prev, sport]);
+      }
+      resetForm();
+      setFormVisible(false);
+    } catch {
+      Alert.alert('Erro', 'Falha ao salvar.');
+    }
+  }
+
+  function handleEdit(index) {
+    const s = sports[index];
+    setForm({ name: s.name, url: s.url });
+    setEditingIndex(index);
+    setFormVisible(true);
+  }
+
+  async function handleDelete(index) {
+    Alert.alert('Confirmar', `Excluir esporte "${sports[index].name}"?`, [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteSport(sports[index].id);
+            setSports(prev => prev.filter((_, i) => i !== index));
+            resetForm();
+            setFormVisible(false);
+          } catch {
+            Alert.alert('Erro', 'Não foi possível excluir');
+          }
+        },
+      },
+    ]);
+  }
+
+  function resetForm() {
+    setForm({ name: '', url: null });
+    setErrors({});
+    setEditingIndex(null);
+  }
+
+  const renderItem = ({ item, index }) => (
+    <Animated.View entering={FadeInDown} exiting={FadeOutUp} style={styles.card}>
+      <TouchableOpacity style={styles.cardContent} onPress={() => handleEdit(index)}>
+        <Image source={{ uri: item.url || placeholderImage }} style={styles.cardImage} />
         <Text style={styles.cardTitle}>{item.name}</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteBtn}>
-        <Text style={styles.deleteText}>EXCLUIR</Text>
+      <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(index)}>
+        <Ionicons name="trash-outline" size={20} color="#fff" />
       </TouchableOpacity>
     </Animated.View>
-  )
+  );
 
   return (
     <View style={styles.container}>
       <SearchBar value={searchText} onChangeText={setSearchText} onSearch={handleSearch} />
 
-      {formVisible && (
-        <Animated.View
-          entering={FadeInDown.duration(300)}
-          exiting={FadeOutUp.duration(300)}
-          style={styles.formContainer}
-        >
-          <TextInput
-            placeholder="Nome do esporte"
-            placeholderTextColor="#666"
-            value={form.nome}
-            onChangeText={handleChange}
-            style={styles.input}
-          />
-          <View style={styles.formButtons}>
-            <TouchableOpacity onPress={handleSubmit} style={styles.submitBtn}>
-              <Text style={styles.submitText}>
-                {editingSportId ? 'ATUALIZAR' : 'CADASTRAR'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setForm({ nome: '' })
-                setFormVisible(false)
-                setEditingSportId(null)
-              }}
-              style={styles.cancelBtn}
-            >
-              <Text style={styles.cancelText}>CANCELAR</Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-      )}
-
       <FlatList
         data={sports}
         keyExtractor={item => item.id.toString()}
         renderItem={renderItem}
-        contentContainerStyle={sports.length === 0 ? styles.emptyList : null}
-        ListEmptyComponent={
-          <Text style={styles.emptyMessage}>Nenhum esporte encontrado</Text>
-        }
+        contentContainerStyle={sports.length === 0 && styles.emptyList}
+        ListEmptyComponent={<Text style={styles.emptyMessage}>Nenhum esporte encontrado</Text>}
       />
 
       {!formVisible && (
-        <TouchableOpacity onPress={() => setFormVisible(true)} style={styles.fab}>
+        <TouchableOpacity style={styles.fab} onPress={() => setFormVisible(true)}>
           <Text style={styles.fabText}>+</Text>
         </TouchableOpacity>
       )}
+
+      <Modal visible={formVisible} animationType="slide" transparent onRequestClose={() => setFormVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <ScrollView contentContainerStyle={styles.modalContent}>
+            <Text style={styles.modalTitle}>{editingIndex !== null ? 'Editar Esporte' : 'Novo Esporte'}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nome do esporte"
+              value={form.name}
+              onChangeText={text => setForm(prev => ({ ...prev, name: text }))}
+            />
+            {errors.name && <Text style={styles.error}>{errors.name}</Text>}
+
+            <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+              {form.url ? (
+                <Image source={{ uri: form.url }} style={styles.imagePreview} />
+              ) : (
+                <Text style={{ color: '#555' }}>Escolher imagem</Text>
+              )}
+            </TouchableOpacity>
+            {errors.url && <Text style={styles.error}>{errors.url}</Text>}
+
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={styles.confirmBtn} onPress={handleSubmit}>
+                <Text style={styles.btnText}>{editingIndex !== null ? 'ATUALIZAR' : 'CADASTRAR'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.cancelBtn} onPress={() => setFormVisible(false)}>
+                <Text style={styles.btnText}>CANCELAR</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  formContainer: {
-    marginBottom: 16,
-    paddingHorizontal: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
-    color: '#333',
-  },
-  formButtons: {
+  container: { flex: 1, backgroundColor: '#fff', padding: 16 },
+  card: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  submitBtn: {
-    backgroundColor: '#06C823',
-    flex: 1,
-    marginRight: 8,
-    paddingVertical: 12,
-    borderRadius: 8,
     alignItems: 'center',
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    elevation: 1,
   },
-  submitText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cancelBtn: {
-    backgroundColor: '#999',
-    flex: 1,
-    marginLeft: 8,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  cancelText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cardContent: {
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  cardTitle: {
-    fontSize: 18,
-    color: '#222',
-  },
+  cardContent: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  cardImage: { width: 50, height: 50, borderRadius: 8, marginRight: 12 },
+  cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#222' },
   deleteBtn: {
     backgroundColor: 'red',
+    padding: 6,
     borderRadius: 6,
-    paddingVertical: 6,
-    marginHorizontal: 16,
-    marginBottom: 8,
-  },
-  deleteText: {
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  emptyList: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyMessage: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-    color: '#555',
+    marginLeft: 8,
   },
   fab: {
     position: 'absolute',
@@ -231,11 +221,52 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
   },
-  fabText: {
-    color: '#fff',
-    fontSize: 30,
-    fontWeight: 'bold',
+  fabText: { color: '#fff', fontSize: 30, fontWeight: 'bold' },
+  emptyList: { flexGrow: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyMessage: { textAlign: 'center', fontSize: 16, color: '#555' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center' },
+  modalContent: {
+    backgroundColor: '#fff',
+    marginHorizontal: 24,
+    padding: 20,
+    borderRadius: 10,
   },
-})
+  modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 16, textAlign: 'center' },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 12,
+  },
+  imagePicker: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 6,
+    marginBottom: 12,
+  },
+  imagePreview: { width: '100%', height: '100%', borderRadius: 6 },
+  error: { color: 'red', marginBottom: 8 },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  confirmBtn: {
+    flex: 1,
+    backgroundColor: '#06C823',
+    paddingVertical: 12,
+    marginRight: 6,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  cancelBtn: {
+    flex: 1,
+    backgroundColor: '#999',
+    paddingVertical: 12,
+    marginLeft: 6,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  btnText: { color: '#fff', fontWeight: 'bold' },
+});

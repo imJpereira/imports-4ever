@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors, metrics, typography } from '../../../assets/js/theme'
-import { getOrders, getOrderById, deleteOrder } from '../../services/OrderService' // ajustar caminho
+import { getOrders, getOrderById, deleteOrder } from '../../services/OrderService' 
 
 export default function OrderScreen() {
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -35,7 +35,7 @@ export default function OrderScreen() {
     setSelectedOrder(order)
     try {
       const fullOrder = await getOrderById(order.id)
-      setProducts(fullOrder.produtos || []) // ajustar se chave for diferente
+      setProducts(fullOrder.produtos || []) 
       setOrderModalVisible(true)
     } catch (error) {
       Alert.alert('Erro', 'Falha ao carregar detalhes do pedido')
@@ -44,7 +44,7 @@ export default function OrderScreen() {
 
   async function removeOrder() {
     try {
-      // Chamar API para deletar pedido aqui (implemente o deleteOrder no OrderService)
+     
       await deleteOrder(selectedOrder.id)
       setPedidos(prev => prev.filter(p => p.id !== selectedOrder.id))
       setOrderModalVisible(false)
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#ddd', // contorno leve
+    borderColor: '#ddd', 
     alignItems: 'center',
   },
   cardHeader: {

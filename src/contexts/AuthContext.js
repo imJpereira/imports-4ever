@@ -1,51 +1,41 @@
-import { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState } from 'react';
+import axios from 'axios';
+import { setAuthToken } from '../services/api'; 
 
 const AuthContext = createContext();
 
-export default function AuthProvider({children}) {
+export default function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
 
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(null);
-    
-    const signIn = (credentials) => {
+  const signIn = async (credentials) => {
+    try {
+      
+       const response = await axios.post('http://192.168.0.11:8765/auth/signin', credentials); 
 
-        //para teste:
-        credentials = {
-            id: "5b89267f-86e2-4eda-a51a-0a30584a20c3",
-            name: "meu amorrrrr",
-            type: 1 
-            // 0:admin 1:comum
-        }
+      const userData = response.data.user;
+      const token = response.data.token;
 
-        //fazer requisição para o backend validando as credenciais
-        //const response = await axios.post("http://localhost:8000/auth/signin", credentials)
-        //if response != null {
-        setUser(credentials);
-        setToken("token-teste") //response
-    };
-
-    const signUp = (userData) => {
-
-        //validações
-
-
-        //const response = await axios.post("http://localhost:8000/auth/signup", userData)
-        //retorna as credenciais
-
-        signIn({id: 1, name: "admin"}); //response
+      setUser(userData);
+      setToken(token);
+      setAuthToken(token); 
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      throw error;
     }
+  };
 
-    const logout = () => {
-        setUser(null);
-        setToken(null);
-    };
+  const signOut = () => {
+    setUser(null);
+    setToken(null);
+    setAuthToken(null); 
+  };
 
-    return (
-        <AuthContext.Provider value={{ user, token, signIn, signUp, logout }}>
-            {children}
-        </AuthContext.Provider>
-    )
-
+  return (
+    <AuthContext.Provider value={{ user, token, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export const useAuth = () => useContext(AuthContext);

@@ -30,7 +30,7 @@ export default function SignUp({ navigation }) {
       <TouchableOpacity>
         <Text style={styles.bottomText}>
           Já possui uma conta?{' '}
-          <Text style={styles.link} onPress={() => navigation.navigate('SignIn')}>
+          <Text style={styles.link} onPress={() => navigation.navigate('SignInScreen')}>
             Entrar
           </Text>
         </Text>

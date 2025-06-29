@@ -9,7 +9,8 @@ const CartItem = ({ item }) => {
     <View style={styles.itemContainer}>
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemPrice}>R$ {item.price.toFixed(2)}</Text>
+        <Text style={styles.itemPrice}>R$ {item.value.toFixed(2)}</Text>
+      <Text style={styles.itemPrice}>Tamanho: {item.size}</Text>
       </View>
       <View style={styles.quantityContainer}>
         <TouchableOpacity onPress={() => decrementQuantity(item.id)} style={styles.quantityButton}>
@@ -27,7 +28,7 @@ const CartItem = ({ item }) => {
   );
 };
 
-export default function ShoppingCartScreen() {
+export default function ShoppingCartScreen({navigation}) {
   const { cartItems, cartTotal, clearCart } = useShoppingCart();
 
   if (cartItems.length === 0) {
@@ -51,7 +52,12 @@ export default function ShoppingCartScreen() {
       <View style={styles.footer}>
         <Text style={styles.totalText}>Total: R$ {cartTotal.toFixed(2)}</Text>
         <TouchableOpacity style={styles.clearButton} onPress={clearCart}>
-          <Text style={styles.clearButtonText}>Limpar Carrinho</Text>
+          <Text style={styles.actionButtonText}>Limpar Carrinho</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.footer}>
+        <TouchableOpacity style={styles.orderButton} onPress={()=> navigation.navigate("CheckoutScreen")}>
+          <Text style={styles.actionButtonText}>Fazer Pedido</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -144,7 +150,13 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
     },
-    clearButtonText: {
+    orderButton: {
+        backgroundColor: 'green',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    actionButtonText: {
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,

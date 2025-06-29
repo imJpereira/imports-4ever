@@ -115,18 +115,18 @@ export default function ProductScreen() {
 
     if (Object.keys(newErrors).length > 0) return;
 
-      const payload = {
-    name: form.name,
-    description: form.description,
-    value: Number(form.value),
-    url: form.imageUrl,
-    team: form.team,
-    category: form.category,
-    sport: form.sport,
-    status: form.active ? 'ATIVO' : 'INATIVO',
-    highlight: form.highlight,
-    discountValue: 0,
-  };
+    const payload = {
+      name: form.name,
+      description: form.description,
+      value: Number(form.value),
+      url: form.imageUrl,
+      team: form.team,
+      category: form.category,
+      sport: form.sport,
+      status: form.active ? 'ATIVO' : 'INATIVO',
+      highlight: form.highlight,
+      discountValue: 0,
+    };
 
 
     try {

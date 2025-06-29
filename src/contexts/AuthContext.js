@@ -11,7 +11,7 @@ export default function AuthProvider({ children }) {
   const signIn = async (credentials) => {
     try {
       
-       const response = await axios.post('http://192.168.0.11:8765/auth/signin', credentials); 
+      const response = await axios.post('http://189.30.255.90:8000/auth/signin', credentials); 
 
       const userData = response.data.user;
       const token = response.data.token;
@@ -19,6 +19,7 @@ export default function AuthProvider({ children }) {
       setUser(userData);
       setToken(token);
       setAuthToken(token); 
+
     } catch (error) {
       console.error('Erro ao fazer login:', error);
       throw error;

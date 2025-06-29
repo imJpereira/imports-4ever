@@ -77,6 +77,26 @@ function CategoriesStack() {
           ),
         })}
       />
+      <Stack.Screen
+        name="ProductScreen"
+        component={ProductScreen}
+        options={{ headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="ProductDetailsScreen"
+        component={ProductDetailsScreen}
+        options={{ headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="SportsScreen"
+        component={SportsScreen}
+        options={{ headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="TeamsScreen"
+        component={TeamsScreen}
+        options={{ headerTitleAlign: 'center' }}
+      />
      
     </Stack.Navigator>
   );

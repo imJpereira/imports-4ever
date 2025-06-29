@@ -5,12 +5,14 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { getProductById } from '../../services/ProductService';
+import { useShoppingCart } from '../../contexts/ShoppingCartContext';
 
 export default function ProductDetailsScreen({ route }) {
   const { productId } = route.params;
   const [product, setProduct] = useState(null);
   const [currency, setCurrency] = useState('BRL');
   const [selectedSize, setSelectedSize] = useState(null);
+  const { addToCart } = useShoppingCart();
   const [loading, setLoading] = useState(true);
 
   const sizes = ['P', 'M', 'G', 'GG', 'XG'];
@@ -42,6 +44,14 @@ export default function ProductDetailsScreen({ route }) {
       return;
     }
     
+    const productToAdd = {
+      ...product,
+      size: selectedSize,
+      id: `${product.id}-${selectedSize}`
+    };
+
+
+    addToCart(productToAdd);
     Alert.alert('Sucesso!', 'Produto adicionado ao carrinho.');
   };
 

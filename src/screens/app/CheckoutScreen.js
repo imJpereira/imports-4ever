@@ -1,11 +1,35 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useShoppingCart } from '../../contexts/ShoppingCartContext';
+import { createOrder } from '../../services/OrderService';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CheckoutScreen = ({ route, navigation }) => {
-  const { shoppingCart, total } = route.params;
 
-  const finalizePurchase = () => {
-    Alert.alert('Compra finalizada!', 'Obrigado pela sua compra.');
+  const { cartItems, cartTotal, clearCart } = useShoppingCart();
+
+  const finalizePurchase = async () => {
+    
+    const orderItems = cartItems.map((item) => {
+      return {
+        productId: item.id.split('-').slice(0, 5).join('-'), 
+        quantity: item.quantity,
+        size: item.size
+      }
+    })
+
+    try {
+      const response = await createOrder(orderItems);
+      
+      console.log(response);
+      if (response.error != null) {
+        clearCart();
+        Alert.alert('Compra finalizada!', 'Obrigado pela sua compra.');
+      }
+    } catch(e) {
+      console.log(e);
+    }
+    
   };
 
   const backToCart = () => {
@@ -16,7 +40,8 @@ const CheckoutScreen = ({ route, navigation }) => {
     <View style={styles.itemContainer}>
       <Text style={styles.nome}>{item.name}</Text>
       <Text>Quantidade: {item.quantity}</Text>
-      <Text>Subtotal: R$ {(item.preco * item.quantity).toFixed(2)}</Text>
+      <Text>Tamanho: {item.size}</Text>
+      <Text>Subtotal: R$ {(item.value * item.quantity).toFixed(2)}</Text>
     </View>
   );
 
@@ -24,12 +49,12 @@ const CheckoutScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <Text style={styles.titulo}>Resumo do Pedido</Text>
       <FlatList
-        data={shoppingCart}
+        data={cartItems}
         keyExtractor={item => item.id}
         renderItem={renderItem}
         ListEmptyComponent={<Text style={styles.vazio}>Nenhum item no carrinho.</Text>}
       />
-      <Text style={styles.total}>Total: R$ {total}</Text>
+      <Text style={styles.total}>Total: R$ {cartTotal.toFixed(2)}</Text>
 
       <View style={styles.botoesContainer}>
         <TouchableOpacity style={styles.botaoVoltar} onPress={backToCart}>

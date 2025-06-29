@@ -10,10 +10,10 @@ export default function ShoppingCartProvider({ children }) {
       const existingItem = prevItems.find(item => item.id === product.id);
       if (existingItem) {
         return prevItems.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id ? { ...item, quantity: item.quantity + 1} : item
         );
       } else {
-        return [...prevItems, { ...product, quantity: 1 }];
+        return [...prevItems, { ...product, quantity: 1}];
       }
     });
   };
@@ -47,7 +47,7 @@ export default function ShoppingCartProvider({ children }) {
 
 
   const cartTotal = useMemo(() => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => total + (item.value * item.quantity), 0);
   }, [cartItems]);
   
 

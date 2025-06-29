@@ -14,7 +14,7 @@ import axios from 'axios'
 
 // conexão casa alex
   export const gatewayApi = axios.create({
-    baseURL: 'http://192.168.0.11:8765/ws',
+    baseURL: 'http://189.30.255.90:8000/ws',
       timeout: 5000,
     })
 

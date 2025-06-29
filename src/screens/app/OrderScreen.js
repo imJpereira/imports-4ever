@@ -24,8 +24,9 @@ export default function OrderScreen() {
 
   async function fetchOrders() {
     try {
-      const orders = await getOrders()
-      setPedidos(orders)
+      const response = await getOrders();
+      setPedidos(response.orders)
+      console.log(pedidos)
     } catch (error) {
       Alert.alert('Erro', 'Falha ao carregar pedidos')
     }
@@ -39,17 +40,6 @@ export default function OrderScreen() {
       setOrderModalVisible(true)
     } catch (error) {
       Alert.alert('Erro', 'Falha ao carregar detalhes do pedido')
-    }
-  }
-
-  async function removeOrder() {
-    try {
-     
-      await deleteOrder(selectedOrder.id)
-      setPedidos(prev => prev.filter(p => p.id !== selectedOrder.id))
-      setOrderModalVisible(false)
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao excluir pedido')
     }
   }
 

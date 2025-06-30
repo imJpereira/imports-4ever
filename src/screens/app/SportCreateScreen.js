@@ -131,8 +131,8 @@ export default function SportScreen() {
         <Image source={{ uri: item.url || placeholderImage }} style={styles.cardImage} />
         <Text style={styles.cardTitle}>{item.name}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(index)}>
-        <Ionicons name="trash-outline" size={20} color="#fff" />
+      <TouchableOpacity onPress={() => handleDelete(index)}>
+        <Ionicons name="trash" size={24} color="#B00020" />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -205,12 +205,6 @@ const styles = StyleSheet.create({
   cardContent: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   cardImage: { width: 50, height: 50, borderRadius: 8, marginRight: 12 },
   cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#222' },
-  deleteBtn: {
-    backgroundColor: 'red',
-    padding: 6,
-    borderRadius: 6,
-    marginLeft: 8,
-  },
   fab: {
     position: 'absolute',
     right: 20,

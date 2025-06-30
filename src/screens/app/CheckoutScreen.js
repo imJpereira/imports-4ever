@@ -5,7 +5,7 @@ import { createOrder } from '../../services/OrderService';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function CheckoutScreen({ navigation }) {
-  const { cartItems, cartTotalBRL, clearCart } = useShoppingCart();
+  const { cartItems, clearCart } = useShoppingCart();
   const { user } = useAuth();
 
   const finalizePurchase = async () => {
@@ -25,18 +25,18 @@ export default function CheckoutScreen({ navigation }) {
       return;
     }
 
-    
     const orderItems = cartItems.map(item => ({
-      productId: item.originalId.split('-').slice(0, 5).join('-'),
+      productId: item.originalId || item.id.split('-').slice(0, 5).join('-'),
       quantity: item.quantity,
       size: item.size || undefined,
     }));
-  
-    console.log(orderItems)
 
     try {
-
-      const { order, error } = await createOrder(orderItems);
+      const { order, error } = await createOrder(orderItems, {
+        'X-User-Id': user.id,
+        'X-User-Email': user.email,
+        'X-User-Type': user.type,
+      });
 
       if (!error) {
         Alert.alert(
@@ -59,8 +59,8 @@ export default function CheckoutScreen({ navigation }) {
   };
 
   const renderItem = ({ item }) => {
-    const unitPriceFormatted = `${item.currencySymbol} ${(Number(item.unitValueOriginal) || 0).toFixed(2)}`;
-    const subtotalBRL = (Number(item.unitValueConverted || 0) * item.quantity).toFixed(2);
+    const unitPriceFormatted = `${item.currencySymbol || 'R$'} ${(Number(item.unitValueConverted) || 0).toFixed(2)}`;
+    const subtotalBRL = (Number(item.unitValueOriginal || 0) * item.quantity).toFixed(2);
 
     return (
       <View style={styles.itemContainer}>
@@ -73,6 +73,12 @@ export default function CheckoutScreen({ navigation }) {
     );
   };
 
+ 
+  const totalBRL = cartItems.reduce((total, item) => {
+    const subtotal = (Number(item.unitValueOriginal || 0) * item.quantity);
+    return total + subtotal;
+  }, 0);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Resumo do Pedido</Text>
@@ -82,7 +88,7 @@ export default function CheckoutScreen({ navigation }) {
         renderItem={renderItem}
         ListEmptyComponent={<Text style={styles.empty}>Nenhum item no carrinho.</Text>}
       />
-      <Text style={styles.total}>Valor Total (em BRL): R$ {cartTotalBRL.toFixed(2)}</Text>
+      <Text style={styles.total}>Valor Total (em BRL): R$ {totalBRL.toFixed(2)}</Text>
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Text style={styles.buttonText}>Voltar ao Carrinho</Text>

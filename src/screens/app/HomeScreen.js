@@ -133,7 +133,9 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.listContainer}>
           <SectionHeader
             title="CATEGORIAS"
-            onPress={() => navigation.navigate("Categorias")}
+            onPress={() =>
+              navigation.getParent()?.navigate("Categorias")
+            }
           />
           {categories.length === 0 ? (
             <Text style={styles.emptyMessage}>Nenhuma categoria cadastrada.</Text>
@@ -157,7 +159,9 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.listContainer}>
           <SectionHeader
             title="BUSQUE POR ESPORTE"
-            onPress={() => navigation.navigate("SportsScreen")}
+            onPress={() =>
+              navigation.getParent()?.navigate("Inicio", { screen: "Esportes" })
+            }
           />
           {sports.length === 0 ? (
             <Text style={styles.emptyMessage}>Nenhum esporte cadastrado.</Text>
@@ -181,7 +185,9 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.listContainer}>
           <SectionHeader
             title="TIMES"
-            onPress={() => navigation.navigate("Times")}
+            onPress={() =>
+              navigation.getParent()?.navigate("Inicio", { screen: "Times" })
+            }
           />
           {teams.length === 0 ? (
             <Text style={styles.emptyMessage}>Nenhum time cadastrado.</Text>

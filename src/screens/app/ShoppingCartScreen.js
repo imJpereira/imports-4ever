@@ -10,7 +10,6 @@ export default function ShoppingCartScreen() {
     removeFromCart,
     incrementQuantity,
     decrementQuantity,
-    cartTotalBRL,
   } = useShoppingCart();
 
   const navigation = useNavigation();
@@ -23,15 +22,21 @@ export default function ShoppingCartScreen() {
     navigation.navigate('Checkout do Pedido');
   };
 
+  
+  const cartTotalBRL = cartItems.reduce((total, item) => {
+    const subtotal = Number(item.unitValueOriginal || 0) * item.quantity;
+    return total + subtotal;
+  }, 0);
+
   const renderItem = ({ item }) => {
-    const unitPriceFormatted = `${item.currencySymbol} ${(Number(item.unitValueOriginal) || 0).toFixed(2)}`;
-    const subtotalBRL = `R$ ${(Number(item.unitValueConverted || 0) * item.quantity).toFixed(2)}`;
+    const unitPriceFormatted = `${item.currencySymbol || 'R$'} ${(Number(item.unitValueConverted) || 0).toFixed(2)}`;
+    const subtotalBRL = `R$ ${(Number(item.unitValueOriginal || 0) * item.quantity).toFixed(2)}`;
 
     return (
       <View style={styles.card}>
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.detail}>Tamanho: {item.size}</Text>
+          <Text style={styles.detail}>Tamanho: {item.size || '-'}</Text>
           <Text style={styles.detail}>Quantidade: {item.quantity}</Text>
           <Text style={styles.detail}>Valor unitário: {unitPriceFormatted}</Text>
           <Text style={styles.detail}>Subtotal: {subtotalBRL}</Text>

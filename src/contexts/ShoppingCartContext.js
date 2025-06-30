@@ -67,10 +67,10 @@ export default function ShoppingCartProvider({ children }) {
 
  
   const cartTotalBRL = useMemo(() => {
-    return cartItems.reduce((total, item) => {
-      return total + (item.unitValueConverted * item.quantity);
-    }, 0);
-  }, [cartItems]);
+  return cartItems.reduce((total, item) => {
+    return total + (item.unitValueOriginal * item.quantity);
+  }, 0);
+}, [cartItems]);
 
   const cartItemCount = useMemo(() => {
     return cartItems.reduce((count, item) => count + item.quantity, 0);

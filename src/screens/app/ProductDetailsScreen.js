@@ -6,6 +6,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import { getProductById } from '../../services/ProductService';
 import { useShoppingCart } from '../../contexts/ShoppingCartContext';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ProductDetailsScreen({ route }) {
   const { productId } = route.params;
@@ -14,6 +15,7 @@ export default function ProductDetailsScreen({ route }) {
   const [selectedSize, setSelectedSize] = useState(null);
   const { addToCart } = useShoppingCart();
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   const sizes = ['P', 'M', 'G', 'GG', 'XG'];
 
@@ -46,11 +48,32 @@ export default function ProductDetailsScreen({ route }) {
     const productToAdd = {
       ...product,
       size: selectedSize,
-      id: `${product.id}-${selectedSize}`
+      id: `${product.id}-${selectedSize}`,
+      unitValueOriginal: product.value,
+      unitValueConverted: product.convertedPrice,
+      currencySymbol: {
+        BRL: 'R$',
+        USD: 'US$',
+        EUR: '€',
+      }[currency] || currency + ' ',
     };
 
     addToCart(productToAdd);
-    Alert.alert('Sucesso!', 'Produto adicionado ao carrinho.');
+
+    Alert.alert(
+      'Sucesso!',
+      'Produto adicionado ao carrinho.\nDeseja ir até o carrinho?',
+      [
+        {
+          text: 'Sim',
+          onPress: () => navigation.navigate('Carrinho'),
+        },
+        {
+          text: 'Não',
+          style: 'cancel',
+        },
+      ]
+    );
   };
 
   if (loading) {
@@ -142,7 +165,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 6,
   },
-  finalPrice: { fontSize: 20, color: '#06C823', fontWeight: 'bold' }, 
+  finalPrice: { fontSize: 20, color: '#06C823', fontWeight: 'bold' },
   sectionTitle: { fontSize: 16, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },
   pickerContainer: {
     borderWidth: 1,
@@ -159,7 +182,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   sizeButtonSelected: {
-    backgroundColor: 'rgba(6, 200, 35, 0.15)', 
+    backgroundColor: 'rgba(6, 200, 35, 0.15)',
     borderColor: '#06C823',
   },
   sizeText: { fontSize: 16, color: '#333' },

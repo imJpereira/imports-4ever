@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  TextInput,
   Alert,
 } from 'react-native';
 import {
@@ -20,21 +19,6 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function AccountScreen() {
   const navigation = useNavigation();
   const { user, signOut } = useAuth();
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [userName, setUserName] = useState('Usuário');
-
-  const toggleEditing = () => {
-    setIsEditing(!isEditing);
-  };
-
-  const saveName = () => {
-    if (userName.trim() === '') {
-      Alert.alert('Nome inválido', 'O nome não pode ficar vazio.');
-      return;
-    }
-    setIsEditing(false);
-  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -54,24 +38,9 @@ export default function AccountScreen() {
         <Ionicons name="person-circle-outline" size={70} color="#999" />
         <View style={{ flex: 1, marginLeft: 15 }}>
           <View style={styles.greetingRow}>
-            {isEditing ? (
-              <TextInput
-                style={styles.input}
-                value={userName}
-                onChangeText={setUserName}
-                onSubmitEditing={saveName}
-                onBlur={saveName}
-                autoFocus
-              />
-            ) : (
-              <Text style={styles.userName}>
-                Olá, <Text style={{ fontWeight: 'bold' }}>{user.name}</Text>
-              </Text>
-            )}
-
-            <TouchableOpacity onPress={toggleEditing} style={styles.iconButton}>
-              <Feather name="edit-2" size={24} color="gray" style={styles.iconAdjust} />
-            </TouchableOpacity>
+            <Text style={styles.userName}>
+              Olá, <Text style={{ fontWeight: 'bold' }}>{user.name}</Text>
+            </Text>
 
             <TouchableOpacity onPress={handleLogout} style={styles.iconButton}>
               <Feather name="log-out" size={24} color="gray" style={styles.iconAdjust} />
@@ -177,14 +146,6 @@ const styles = StyleSheet.create({
   greetingRow: { flexDirection: 'row', alignItems: 'center' },
   userName: { fontSize: 20 },
   registerDate: { fontSize: 14, color: '#666' },
-  input: {
-    fontSize: 20,
-    borderBottomWidth: 1,
-    borderColor: '#06C823',
-    paddingVertical: 2,
-    paddingHorizontal: 4,
-    minWidth: 100,
-  },
   iconButton: { marginLeft: 8, padding: 4 },
   iconAdjust: { marginTop: 4 },
   option: {

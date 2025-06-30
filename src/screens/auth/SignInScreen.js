@@ -64,7 +64,7 @@ export default function SignInScreen({ navigation }) {
       <TouchableOpacity>
         <Text style={styles.bottomText}>
           Ainda não possui uma conta?{' '}
-          <Text style={styles.link} onPress={() => navigation.navigate('SignUp')}>
+          <Text style={styles.link} onPress={() => navigation.navigate('Cadastrar')}>
             Cadastre-se
           </Text>
         </Text>

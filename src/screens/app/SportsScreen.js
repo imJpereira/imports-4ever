@@ -28,7 +28,7 @@ export default function SportsScreen({ navigation }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate("ProductScreen", { sportId: item.id })}
+      onPress={() => navigation.navigate("Produtos", { sportId: item.id })}
     >
       {item.url ? <Image source={{ uri: item.url }} style={styles.image} /> : null}
       <Text style={styles.name}>{item.name}</Text>

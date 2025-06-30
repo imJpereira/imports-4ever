@@ -20,7 +20,10 @@ export async function getOrderById(id) {
 
 export async function createOrder(order) {
   try {
-    const response = await gatewayApi.post('/orders/create', order);
+    console.log(order)
+    const response = await gatewayApi.post('/orders/create', {
+      orderItems: order
+    });
     return { order: response.data, error: null };
   } catch (error) {
     return { order: null, error: extractError(error) };

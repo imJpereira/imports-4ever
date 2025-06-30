@@ -20,7 +20,7 @@ export default function ShoppingCartScreen() {
       Alert.alert('Carrinho vazio', 'Adicione produtos antes de finalizar a compra.');
       return;
     }
-    navigation.navigate('CheckoutScreen');
+    navigation.navigate('Checkout do Pedido');
   };
 
   const renderItem = ({ item }) => {

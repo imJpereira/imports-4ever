@@ -103,7 +103,7 @@ export default function CategoriesScreen({ navigation }) {
             renderItem={({ item }) => (
               <CategoryCard
                 category={item}
-                onPress={() => navigation.navigate("ProductScreen", { categoryId: item.id })}
+                onPress={() => navigation.navigate("Produtos", { categoryId: item.id })}
               />
             )}
             contentContainerStyle={styles.horizontalList}
@@ -115,7 +115,7 @@ export default function CategoriesScreen({ navigation }) {
           title="Times"
           onPress={() =>
             navigation.getParent()?.navigate("Inicio", {
-              screen: "TeamsScreen",
+              screen: "Times",
             })
           }
         />
@@ -130,7 +130,7 @@ export default function CategoriesScreen({ navigation }) {
             renderItem={({ item }) => (
               <MiniProductType
                 type={item}
-                onPress={() => navigation.navigate("ProductScreen", { teamId: item.id })}
+                onPress={() => navigation.navigate("Produtos", { teamId: item.id })}
               />
             )}
             contentContainerStyle={styles.horizontalList}
@@ -142,7 +142,7 @@ export default function CategoriesScreen({ navigation }) {
           title="Esportes"
           onPress={() =>
             navigation.getParent()?.navigate("Inicio", {
-              screen: "SportsScreen",
+              screen: "Esportes",
             })
           }
         />
@@ -157,7 +157,7 @@ export default function CategoriesScreen({ navigation }) {
             renderItem={({ item }) => (
               <MiniProductType
                 type={item}
-                onPress={() => navigation.navigate("ProductScreen", { sportId: item.id })}
+                onPress={() => navigation.navigate("Produtos", { sportId: item.id })}
               />
             )}
             contentContainerStyle={styles.horizontalList}
@@ -185,7 +185,7 @@ export default function CategoriesScreen({ navigation }) {
                 style={styles.modalCardWrapper}
                 onPress={() => {
                   setModalVisible(false);
-                  navigation.navigate("ProductScreen", { categoryId: item.id });
+                  navigation.navigate("Produtos", { categoryId: item.id });
                 }}
               >
                 <CategoryCard category={item} />

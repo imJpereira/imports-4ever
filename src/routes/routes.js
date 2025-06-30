@@ -29,27 +29,27 @@ function HomeStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="HomeScreen"
+        name="Página Inicial"
         component={HomeScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="ProductScreen"
+        name="Produtos"
         component={ProductScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="ProductDetailsScreen"
+        name="Sobre o produto"
         component={ProductDetailsScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="SportsScreen"
+        name="Esportes"
         component={SportsScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="TeamsScreen"
+        name="Times"
         component={TeamsScreen}
         options={{ headerTitleAlign: 'center' }}
       />
@@ -61,7 +61,7 @@ function CategoriesStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="CategoriesScreen"
+        name="Categorias"
         component={CategoriesScreen}
         options={({ navigation }) => ({
           headerTitle: "Categorias",
@@ -78,22 +78,22 @@ function CategoriesStack() {
         })}
       />
       <Stack.Screen
-        name="ProductScreen"
+        name="Produtos"
         component={ProductScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="ProductDetailsScreen"
+        name="Sobre o produto"
         component={ProductDetailsScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="SportsScreen"
+        name="Esportes"
         component={SportsScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="TeamsScreen"
+        name="Times"
         component={TeamsScreen}
         options={{ headerTitleAlign: 'center' }}
       />
@@ -105,13 +105,18 @@ function OrderStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="ShoppingCartScreen"
+        name="Carrinho"
         component={ShoppingCartScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="CheckoutScreen"
+        name="Checkout do Pedido"
         component={CheckoutScreen}
+        options={{ headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="Pedidos"
+        component={OrderScreen}
         options={{ headerTitleAlign: 'center' }}
       />
     </Stack.Navigator>
@@ -123,37 +128,37 @@ function AccountStackAdmin() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="AccountScreen"
+        name="Perfil"
         component={AccountScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="AccountDataScreen"
+        name="Conta"
         component={AccountDataScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="OrderScreen"
+        name="Pedidos"
         component={OrderScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="CreateProduct"
+        name="Cadastro de Produtos"
         component={CreateProduct}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="CategoryCreateScreen"
+        name="Cadastro de Categorias"
         component={CategoryCreateScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="SportCreateScreen"
+        name="Cadastro de Esportes"
         component={SportCreateScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="TeamCreateScreen"
+        name="Cadastro de Times"
         component={TeamCreateScreen}
         options={{ headerTitleAlign: 'center' }}
       />
@@ -166,17 +171,17 @@ function AccountStackUser() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="AccountScreen"
+        name="Perfil"
         component={AccountScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="AccountDataScreen"
+        name="Conta"
         component={AccountDataScreen}
         options={{ headerTitleAlign: 'center' }}
       />
       <Stack.Screen
-        name="OrderScreen"
+        name="Pedidos"
         component={OrderScreen}
         options={{ headerTitleAlign: 'center' }}
       />
@@ -192,12 +197,12 @@ export default function Routes() {
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
-            name="SignInScreen"
+            name="Entrar"
             component={SignInScreen}
             options={{ headerBackTitle: "Entrar", headerTitleAlign: "center" }}
           />
           <Stack.Screen
-            name="SignUp"
+            name="Cadastrar"
             component={SignUpScreen}
             options={{ headerBackTitle: "Cadastrar", headerTitleAlign: "center" }}
           />
@@ -226,8 +231,16 @@ export default function Routes() {
           tabBarInactiveTintColor: "#c1c1c1",
         })}
       >
-        <Tab.Screen name="Inicio" component={HomeStack} />
-        <Tab.Screen name="Carrinho" component={OrderStack} />
+        <Tab.Screen 
+          name="Inicio" 
+          component={HomeStack} 
+          options={{ title: "Página Inicial" }}
+          />
+        <Tab.Screen 
+          name="Carrinho" 
+          component={OrderStack} 
+          options={{ title: "Carrinho" }}
+          />
         <Tab.Screen
           name="Categorias"
           component={CategoriesStack}
@@ -236,6 +249,7 @@ export default function Routes() {
         <Tab.Screen
           name="Perfil"
           component={isAdmin ? AccountStackAdmin : AccountStackUser}
+          options={{ title: "Perfil" }}
         />
       </Tab.Navigator>
     </NavigationContainer>

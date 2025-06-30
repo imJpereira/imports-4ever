@@ -58,10 +58,10 @@ export default function HomeScreen({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      if (route.params?.redirectTo === "SportsScreen") {
-        navigation.navigate("SportsScreen");
-      } else if (route.params?.redirectTo === "TeamsScreen") {
-        navigation.navigate("TeamsScreen");
+      if (route.params?.redirectTo === "Esportes") {
+        navigation.navigate("Esportes");
+      } else if (route.params?.redirectTo === "Times") {
+        navigation.navigate("Times");
       }
       fetchData();
     }, [route.params])
@@ -95,7 +95,7 @@ export default function HomeScreen({ navigation }) {
         <SearchBar
           value={searchText}
           onChangeText={setSearchText}
-          onSearch={() => navigation.navigate("ProductScreen", { search: searchText })}
+          onSearch={() => navigation.navigate("Produtos", { search: searchText })}
         />
 
         <View style={styles.listContainer}>
@@ -119,7 +119,7 @@ export default function HomeScreen({ navigation }) {
                     image: item.url || item.image || null,
                   }}
                   onPress={() =>
-                    navigation.navigate("ProductDetailsScreen", {
+                    navigation.navigate("Sobre o produto", {
                       productId: item.id,
                     })
                   }
@@ -146,7 +146,7 @@ export default function HomeScreen({ navigation }) {
               renderItem={({ item }) => (
                 <MiniProductType
                   type={{ ...item }}
-                  onPress={() => navigation.navigate("ProductScreen", { categoryId: item.id })}
+                  onPress={() => navigation.navigate("Produtos", { categoryId: item.id })}
                 />
               )}
               contentContainerStyle={styles.list}
@@ -170,7 +170,7 @@ export default function HomeScreen({ navigation }) {
               renderItem={({ item }) => (
                 <MiniSportCard
                   sport={{ ...item, url: item.url || item.image || null }}
-                  onPress={() => navigation.navigate("ProductScreen", { sportId: item.id })}
+                  onPress={() => navigation.navigate("Produtos", { sportId: item.id })}
                 />
               )}
               contentContainerStyle={styles.list}
@@ -181,7 +181,7 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.listContainer}>
           <SectionHeader
             title="TIMES"
-            onPress={() => navigation.navigate("TeamsScreen")}
+            onPress={() => navigation.navigate("Times")}
           />
           {teams.length === 0 ? (
             <Text style={styles.emptyMessage}>Nenhum time cadastrado.</Text>
@@ -194,7 +194,7 @@ export default function HomeScreen({ navigation }) {
               renderItem={({ item }) => (
                 <MiniProductType
                   type={{ ...item }}
-                  onPress={() => navigation.navigate("ProductScreen", { teamId: item.id })}
+                  onPress={() => navigation.navigate("Produtos", { teamId: item.id })}
                 />
               )}
               contentContainerStyle={styles.list}

@@ -27,20 +27,16 @@ export default function CheckoutScreen({ navigation }) {
 
     
     const orderItems = cartItems.map(item => ({
-      productId: item.originalId,
+      productId: item.originalId.split('-').slice(0, 5).join('-'),
       quantity: item.quantity,
       size: item.size || undefined,
     }));
-
-    
-    const payload = {
-      orderItems,
-    };
-
-    console.log('Payload enviado para createOrder:', JSON.stringify(payload, null, 2));
+  
+    console.log(orderItems)
 
     try {
-      const { order, error } = await createOrder(payload);
+
+      const { order, error } = await createOrder(orderItems);
 
       if (!error) {
         Alert.alert(
@@ -50,7 +46,7 @@ export default function CheckoutScreen({ navigation }) {
             text: 'OK',
             onPress: () => {
               clearCart();
-              navigation.navigate('OrderScreen');
+              navigation.navigate('Pedidos');
             },
           }]
         );

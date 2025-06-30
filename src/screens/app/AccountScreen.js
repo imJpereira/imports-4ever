@@ -83,7 +83,7 @@ export default function AccountScreen() {
 
       <TouchableOpacity
         style={styles.option}
-        onPress={() => navigation.navigate('OrderScreen')}
+        onPress={() => navigation.navigate('Pedidos')}
       >
         <Feather name="box" size={24} color="#06C823" />
         <View style={styles.optionText}>
@@ -104,7 +104,7 @@ export default function AccountScreen() {
 
       <TouchableOpacity
         style={styles.option}
-        onPress={() => navigation.navigate('AccountDataScreen')}
+        onPress={() => navigation.navigate('Conta')}
       >
         <Feather name="user" size={24} color="#06C823" />
         <View style={styles.optionText}>
@@ -118,7 +118,7 @@ export default function AccountScreen() {
         <>
           <TouchableOpacity
             style={styles.option}
-            onPress={() => navigation.navigate('CreateProduct')}
+            onPress={() => navigation.navigate('Cadastro de Produtos')}
           >
             <MaterialIcons name="inventory" size={24} color="#06C823" />
             <View style={styles.optionText}>
@@ -130,7 +130,7 @@ export default function AccountScreen() {
 
           <TouchableOpacity
             style={styles.option}
-            onPress={() => navigation.navigate('CategoryCreateScreen')}
+            onPress={() => navigation.navigate('Cadastro de Categorias')}
           >
             <Feather name="tag" size={24} color="#06C823" />
             <View style={styles.optionText}>
@@ -142,7 +142,7 @@ export default function AccountScreen() {
 
           <TouchableOpacity
             style={styles.option}
-            onPress={() => navigation.navigate('TeamCreateScreen')}
+            onPress={() => navigation.navigate('Cadastro de Times')}
           >
             <Feather name="users" size={24} color="#06C823" />
             <View style={styles.optionText}>
@@ -154,7 +154,7 @@ export default function AccountScreen() {
 
           <TouchableOpacity
             style={styles.option}
-            onPress={() => navigation.navigate('SportCreateScreen')}
+            onPress={() => navigation.navigate('Cadastro de Esportes')}
           >
             <MaterialIcons name="sports-soccer" size={24} color="#06C823" />
             <View style={styles.optionText}>

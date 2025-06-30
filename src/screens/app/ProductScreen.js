@@ -78,7 +78,7 @@ export default function ProductScreen({ navigation }) {
               price: item.value,
             }}
             onPress={() =>
-              navigation.navigate("ProductDetailsScreen", { productId: item.id })
+              navigation.navigate("Sobre o produto", { productId: item.id })
             }
           />
         )}

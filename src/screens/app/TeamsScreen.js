@@ -28,7 +28,7 @@ export default function TeamsScreen({ navigation }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate("ProductScreen", { teamId: item.id })}
+      onPress={() => navigation.navigate("Produtos", { teamId: item.id })}
     >
       <Text style={styles.name}>{item.name}</Text>
     </TouchableOpacity>

@@ -75,7 +75,7 @@ export default function SignUpScreen({ navigation }) {
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Entrar')}>
         <Text style={styles.bottomText}>
           Já possui uma conta?{' '}
           <Text style={styles.link}>

@@ -17,7 +17,7 @@ export default function SignUpScreen({ navigation }) {
     }
 
     try {
-      await axios.post('http://192.168.0.11:8765/auth/signup', {
+      await axios.post('http://189.30.255.90:8000/auth/signup', {
         name: name.trim(),
         email: email.trim(),
         password: password.trim(),

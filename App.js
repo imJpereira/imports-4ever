@@ -1,24 +1,15 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "./screens/HomeScreen";
+import { StatusBar } from "expo-status-bar";
+import AuthProvider from "./src/contexts/AuthContext";
+import ShoppingCartProvider from "./src/contexts/ShoppingCartContext"
+import Routes from "./src/routes/routes"
 
 export default function App() {
-  
-  const Stack = createNativeStackNavigator();
-  
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="HomeScreen"
-          options={{
-            headerBackTitle: "Personagens",
-            headerTitleAlign: "center",
-          }}
-          component={HomeScreen}
-        >
-        </Stack.Screen>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <ShoppingCartProvider>
+        <Routes />
+        <StatusBar style="auto" />
+      </ShoppingCartProvider>
+    </AuthProvider>
   );
 }

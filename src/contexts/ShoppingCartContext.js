@@ -6,17 +6,37 @@ export default function ShoppingCartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
 
   const addToCart = (product) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1} : item
-        );
-      } else {
-        return [...prevItems, { ...product, quantity: 1}];
-      }
-    });
-  };
+  setCartItems(prevItems => {
+    const baseId = product.id;
+    const uniqueId = `${baseId}-${product.size || ''}`;
+
+    const existingItem = prevItems.find(item => item.id === uniqueId);
+
+    if (existingItem) {
+      return prevItems.map(item =>
+        item.id === uniqueId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      return [
+        ...prevItems,
+        {
+          ...product,
+          id: uniqueId,
+          originalId: product.id, 
+          quantity: 1,
+          currency: product.currency || 'BRL',
+          currencySymbol:
+            product.currency === 'USD' ? '$' :
+            product.currency === 'EUR' ? '€' : 'R$',
+          unitValueOriginal: product.value ?? 0,
+          unitValueConverted: product.convertedPrice ?? product.value ?? 0,
+        }
+      ];
+    }
+  });
+};
 
 
   const removeFromCart = (productId) => {
@@ -45,33 +65,34 @@ export default function ShoppingCartProvider({ children }) {
     setCartItems([]);
   };
 
-
-  const cartTotal = useMemo(() => {
-    return cartItems.reduce((total, item) => total + (item.value * item.quantity), 0);
+ 
+  const cartTotalBRL = useMemo(() => {
+    return cartItems.reduce((total, item) => {
+      return total + (item.unitValueConverted * item.quantity);
+    }, 0);
   }, [cartItems]);
-  
 
   const cartItemCount = useMemo(() => {
-      return cartItems.reduce((count, item) => count + item.quantity, 0);
+    return cartItems.reduce((count, item) => count + item.quantity, 0);
   }, [cartItems]);
 
-
   return (
-    <ShoppingCartContext.Provider value={{
-      cartItems,
-      addToCart,
-      removeFromCart,
-      incrementQuantity,
-      decrementQuantity,
-      clearCart,
-      cartTotal,
-      cartItemCount,
-    }}>
+    <ShoppingCartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        incrementQuantity,
+        decrementQuantity,
+        clearCart,
+        cartTotalBRL,
+        cartItemCount,
+      }}
+    >
       {children}
     </ShoppingCartContext.Provider>
   );
 }
-
 
 export function useShoppingCart() {
   const context = useContext(ShoppingCartContext);

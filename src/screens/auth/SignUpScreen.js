@@ -1,36 +1,84 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
+import axios from 'axios';
+import { useAuth } from '../../contexts/AuthContext';
 
-export default function SignUp({ navigation }) {
+export default function SignUpScreen({ navigation }) {
+  const { signIn } = useAuth();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignUp = async () => {
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      Alert.alert('Erro', 'Preencha todos os campos');
+      return;
+    }
+
+    try {
+      await axios.post('http://189.30.255.90:8000/auth/signup', {
+        name: name.trim(),
+        email: email.trim(),
+        password: password.trim(),
+      });
+
+      await signIn({ email, password });
+    } catch (error) {
+      console.error('Erro ao cadastrar:', error);
+      Alert.alert('Erro', 'Não foi possível cadastrar. Verifique os dados.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>4ever{"\n"}Imports</Text>
-      <Text style={styles.subtitle}>Cadastrar</Text>
+      <Text style={styles.subtitle}>Cadastro</Text>
+
+      <View style={styles.inputContainer}>
+        <AntDesign name="user" size={20} color="gray" style={styles.icon} />
+        <TextInput
+          placeholder="Nome completo"
+          value={name}
+          onChangeText={setName}
+          style={styles.input}
+        />
+      </View>
 
       <View style={styles.inputContainer}>
         <AntDesign name="mail" size={20} color="gray" style={styles.icon} />
-        <TextInput placeholder="Digite seu email:" style={styles.input} keyboardType="email-address" />
+        <TextInput
+          placeholder="Digite seu email:"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          style={styles.input}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
       </View>
 
       <View style={styles.inputContainer}>
         <Feather name="lock" size={20} color="gray" style={styles.icon} />
-        <TextInput placeholder="Senha:" style={styles.input} secureTextEntry />
+        <TextInput
+          placeholder="Senha:"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
       </View>
 
-      <View style={styles.inputContainer}>
-        <Feather name="lock" size={20} color="gray" style={styles.icon} />
-        <TextInput placeholder="Confirmar senha:" style={styles.input} secureTextEntry />
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MainTabs')}>
-        <Text style={styles.buttonText}>Registrar</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
         <Text style={styles.bottomText}>
           Já possui uma conta?{' '}
-          <Text style={styles.link} onPress={() => navigation.navigate('SignInScreen')}>
+          <Text style={styles.link}>
             Entrar
           </Text>
         </Text>

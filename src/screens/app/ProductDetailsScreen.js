@@ -35,7 +35,6 @@ export default function ProductDetailsScreen({ route }) {
 
   const handleCurrencyChange = (value) => {
     setCurrency(value);
-    
   };
 
   const handleAddToCart = () => {
@@ -43,13 +42,12 @@ export default function ProductDetailsScreen({ route }) {
       Alert.alert('Erro', 'Por favor, selecione um tamanho.');
       return;
     }
-    
+
     const productToAdd = {
       ...product,
       size: selectedSize,
       id: `${product.id}-${selectedSize}`
     };
-
 
     addToCart(productToAdd);
     Alert.alert('Sucesso!', 'Produto adicionado ao carrinho.');
@@ -71,14 +69,12 @@ export default function ProductDetailsScreen({ route }) {
     );
   }
 
-  
   const currencySymbol = {
     BRL: 'R$',
     USD: 'US$',
     EUR: '€',
   }[currency] || currency + ' ';
 
-  
   const displayPrice =
     typeof product.convertedPrice === 'number'
       ? product.convertedPrice
@@ -146,7 +142,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 6,
   },
-  finalPrice: { fontSize: 20, color: 'green', fontWeight: 'bold' },
+  finalPrice: { fontSize: 20, color: '#06C823', fontWeight: 'bold' }, 
   sectionTitle: { fontSize: 16, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },
   pickerContainer: {
     borderWidth: 1,
@@ -162,11 +158,14 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 14,
   },
-  sizeButtonSelected: { backgroundColor: '#eaffea', borderColor: 'green' },
+  sizeButtonSelected: {
+    backgroundColor: 'rgba(6, 200, 35, 0.15)', 
+    borderColor: '#06C823',
+  },
   sizeText: { fontSize: 16, color: '#333' },
-  sizeTextSelected: { color: 'green', fontWeight: 'bold' },
+  sizeTextSelected: { color: '#06C823', fontWeight: 'bold' },
   addToCartButton: {
-    backgroundColor: 'green',
+    backgroundColor: '#06C823',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',

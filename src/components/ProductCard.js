@@ -18,7 +18,7 @@ export default function ProductCard({ product, onPress }) {
                 <Image
                     style={styles.image}
                     source={{
-                        uri: product.image || 'https://via.placeholder.com/150', // placeholder se não tiver imagem
+                        uri: product.image || 'https://via.placeholder.com/150', 
                     }}
                 />
             </View>

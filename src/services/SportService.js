@@ -36,8 +36,9 @@ export async function createSport(sport) {
     const response = await gatewayApi.post('/sports/create', payload);
     return { sport: response.data, error: null };
   } catch (error) {
-    console.log('Erro ao criar esporte:', error.response?.data);
-    return { sport: null, error: extractError(error) };
+    const extractedError = extractError(error);
+    console.log('Erro ao criar esporte:', extractedError);
+    return { sport: null, error: extractedError };
   }
 }
 
@@ -50,8 +51,9 @@ export async function updateSport(id, sport) {
     const response = await gatewayApi.put(`/sports/update/${id}`, payload);
     return { sport: response.data, error: null };
   } catch (error) {
-    console.log('Erro ao atualizar esporte:', error.response?.data);
-    return { sport: null, error: extractError(error) };
+    const extractedError = extractError(error);
+    console.log('Erro ao atualizar esporte:', extractedError);
+    return { sport: null, error: extractedError };
   }
 }
 

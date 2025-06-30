@@ -20,13 +20,21 @@ export async function getOrderById(id) {
 
 export async function createOrder(order) {
   try {
-    const response = await gatewayApi.post('/orders/create', { orderItems : order});
+    const response = await gatewayApi.post('/orders/create', order);
     return { order: response.data, error: null };
   } catch (error) {
     return { order: null, error: extractError(error) };
   }
 }
 
+export async function deleteOrder(orderId) {
+  try {
+    await gatewayApi.delete(`/orders/delete/${orderId}`);
+    return { error: null };
+  } catch (error) {
+    return { error: error?.response?.data?.message || 'Erro ao excluir pedido' };
+  }
+}
 
 function extractError(error) {
   return (

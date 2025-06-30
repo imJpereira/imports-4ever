@@ -97,7 +97,6 @@ function CategoriesStack() {
         component={TeamsScreen}
         options={{ headerTitleAlign: 'center' }}
       />
-     
     </Stack.Navigator>
   );
 }
@@ -119,7 +118,8 @@ function OrderStack() {
   );
 }
 
-function AccountStack() {
+
+function AccountStackAdmin() {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -161,6 +161,29 @@ function AccountStack() {
   );
 }
 
+
+function AccountStackUser() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="AccountScreen"
+        component={AccountScreen}
+        options={{ headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="AccountDataScreen"
+        component={AccountDataScreen}
+        options={{ headerTitleAlign: 'center' }}
+      />
+      <Stack.Screen
+        name="OrderScreen"
+        component={OrderScreen}
+        options={{ headerTitleAlign: 'center' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 export default function Routes() {
   const { user } = useAuth();
 
@@ -183,37 +206,7 @@ export default function Routes() {
     );
   }
 
-  if (user.type === "Admin") {
-    return (
-      <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            headerShown: false,
-            tabBarIcon: ({ focused, size, color }) => {
-              let iconName;
-              if (route.name === "Inicio") iconName = focused ? "home" : "home-outline";
-              else if (route.name === "Carrinho") iconName = focused ? "cart" : "cart-outline";
-              else if (route.name === "Categorias") iconName = focused ? "grid" : "grid-outline";
-              else if (route.name === "Perfil") iconName = focused ? "person" : "person-outline";
-
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-            tabBarActiveTintColor: "#06C823",
-            tabBarInactiveTintColor: "#c1c1c1",
-          })}
-        >
-          <Tab.Screen name="Inicio" component={HomeStack} />
-          <Tab.Screen name="Carrinho" component={OrderStack} />
-          <Tab.Screen
-            name="Categorias"
-            component={CategoriesStack} 
-            options={{ title: "Categorias" }}
-          />
-          <Tab.Screen name="Perfil" component={AccountStack} />
-        </Tab.Navigator>
-      </NavigationContainer>
-    );
-  }
+  const isAdmin = user.type === "Admin";
 
   return (
     <NavigationContainer>
@@ -237,10 +230,13 @@ export default function Routes() {
         <Tab.Screen name="Carrinho" component={OrderStack} />
         <Tab.Screen
           name="Categorias"
-          component={CategoriesStack} 
+          component={CategoriesStack}
           options={{ title: "Categorias" }}
         />
-        <Tab.Screen name="Perfil" component={AccountStack} />
+        <Tab.Screen
+          name="Perfil"
+          component={isAdmin ? AccountStackAdmin : AccountStackUser}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );

@@ -19,10 +19,10 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function AccountScreen() {
   const navigation = useNavigation();
+  const { user, signOut } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [userName, setUserName] = useState('Usuário');
-  const { user } = useAuth();
 
   const toggleEditing = () => {
     setIsEditing(!isEditing);
@@ -37,12 +37,19 @@ export default function AccountScreen() {
   };
 
   const handleLogout = () => {
-    navigation.navigate('SignInScreen');
+    Alert.alert(
+      'Sair da conta',
+      'Tem certeza que deseja sair?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Sair', style: 'destructive', onPress: () => signOut() },
+      ],
+      { cancelable: true }
+    );
   };
 
   return (
     <ScrollView style={styles.container}>
-
       <View style={styles.userInfo}>
         <Ionicons name="person-circle-outline" size={70} color="#999" />
         <View style={{ flex: 1, marginLeft: 15 }}>
@@ -83,11 +90,7 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Meus pedidos</Text>
           <Text style={styles.optionSubtitle}>Acompanhe seus pedidos aqui</Text>
         </View>
-        <Feather
-          name="chevron-right"
-          size={24}
-          color="#06C823"
-        />
+        <Feather name="chevron-right" size={24} color="#06C823" />
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.option}>
@@ -96,11 +99,7 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Avalie nosso aplicativo</Text>
           <Text style={styles.optionSubtitle}>Sua opinião é importante para nós!</Text>
         </View>
-        <Feather
-          name="chevron-right"
-          size={24}
-          color="#06C823"
-        />
+        <Feather name="chevron-right" size={24} color="#06C823" />
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -112,76 +111,60 @@ export default function AccountScreen() {
           <Text style={styles.optionTitle}>Dados Pessoais</Text>
           <Text style={styles.optionSubtitle}>Gerencie suas informações com segurança.</Text>
         </View>
-        <Feather
-          name="chevron-right"
-          size={24}
-          color="#06C823"
-        />
+        <Feather name="chevron-right" size={24} color="#06C823" />
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.option}
-        onPress={() => navigation.navigate('CreateProduct')}
-      >
-        <MaterialIcons name="inventory" size={24} color="#06C823" />
-        <View style={styles.optionText}>
-          <Text style={styles.optionTitle}>Cadastro de Produto</Text>
-          <Text style={styles.optionSubtitle}>Adicione novos produtos ao sistema.</Text>
-        </View>
-        <Feather
-          name="chevron-right"
-          size={24}
-          color="#06C823"
-        />
-      </TouchableOpacity>
+      {user?.type === 'Admin' && (
+        <>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate('CreateProduct')}
+          >
+            <MaterialIcons name="inventory" size={24} color="#06C823" />
+            <View style={styles.optionText}>
+              <Text style={styles.optionTitle}>Cadastro de Produto</Text>
+              <Text style={styles.optionSubtitle}>Adicione novos produtos ao sistema.</Text>
+            </View>
+            <Feather name="chevron-right" size={24} color="#06C823" />
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.option}
-        onPress={() => navigation.navigate('CategoryCreateScreen')}
-      >
-        <Feather name="tag" size={24} color="#06C823" />
-        <View style={styles.optionText}>
-          <Text style={styles.optionTitle}>Cadastro de Categoria</Text>
-          <Text style={styles.optionSubtitle}>Organize os produtos por categorias.</Text>
-        </View>
-        <Feather
-          name="chevron-right"
-          size={24}
-          color="#06C823"
-        />
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate('CategoryCreateScreen')}
+          >
+            <Feather name="tag" size={24} color="#06C823" />
+            <View style={styles.optionText}>
+              <Text style={styles.optionTitle}>Cadastro de Categoria</Text>
+              <Text style={styles.optionSubtitle}>Organize os produtos por categorias.</Text>
+            </View>
+            <Feather name="chevron-right" size={24} color="#06C823" />
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.option}
-        onPress={() => navigation.navigate('TeamCreateScreen')}
-      >
-        <Feather name="users" size={24} color="#06C823" />
-        <View style={styles.optionText}>
-          <Text style={styles.optionTitle}>Cadastro de Times</Text>
-          <Text style={styles.optionSubtitle}>Configure os times disponíveis no app.</Text>
-        </View>
-        <Feather
-          name="chevron-right"
-          size={24}
-          color="#06C823"
-        />
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate('TeamCreateScreen')}
+          >
+            <Feather name="users" size={24} color="#06C823" />
+            <View style={styles.optionText}>
+              <Text style={styles.optionTitle}>Cadastro de Times</Text>
+              <Text style={styles.optionSubtitle}>Configure os times disponíveis no app.</Text>
+            </View>
+            <Feather name="chevron-right" size={24} color="#06C823" />
+          </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.option}
-        onPress={() => navigation.navigate('SportCreateScreen')}
-      >
-        <MaterialIcons name="sports-soccer" size={24} color="#06C823" />
-        <View style={styles.optionText}>
-          <Text style={styles.optionTitle}>Cadastro de Esportes</Text>
-          <Text style={styles.optionSubtitle}>Gerencie os tipos de esportes cadastrados.</Text>
-        </View>
-        <Feather
-          name="chevron-right"
-          size={24}
-          color="#06C823"
-        />
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.option}
+            onPress={() => navigation.navigate('SportCreateScreen')}
+          >
+            <MaterialIcons name="sports-soccer" size={24} color="#06C823" />
+            <View style={styles.optionText}>
+              <Text style={styles.optionTitle}>Cadastro de Esportes</Text>
+              <Text style={styles.optionSubtitle}>Gerencie os tipos de esportes cadastrados.</Text>
+            </View>
+            <Feather name="chevron-right" size={24} color="#06C823" />
+          </TouchableOpacity>
+        </>
+      )}
 
       <Text style={styles.version}>Versão 1.0</Text>
     </ScrollView>
@@ -191,10 +174,7 @@ export default function AccountScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 20 },
   userInfo: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
-  greetingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  greetingRow: { flexDirection: 'row', alignItems: 'center' },
   userName: { fontSize: 20 },
   registerDate: { fontSize: 14, color: '#666' },
   input: {
@@ -205,13 +185,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     minWidth: 100,
   },
-  iconButton: {
-    marginLeft: 8,
-    padding: 4,
-  },
-  iconAdjust: {
-    marginTop: 4,
-  },
+  iconButton: { marginLeft: 8, padding: 4 },
+  iconAdjust: { marginTop: 4 },
   option: {
     flexDirection: 'row',
     alignItems: 'center',

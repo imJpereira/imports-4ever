@@ -1,164 +1,141 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useShoppingCart } from '../../contexts/ShoppingCartContext';
+import { useNavigation } from '@react-navigation/native';
 
-const CartItem = ({ item }) => {
-  const { incrementQuantity, decrementQuantity, removeFromCart } = useShoppingCart();
+export default function ShoppingCartScreen() {
+  const {
+    cartItems,
+    removeFromCart,
+    incrementQuantity,
+    decrementQuantity,
+    cartTotalBRL,
+  } = useShoppingCart();
 
-  return (
-    <View style={styles.itemContainer}>
-      <View style={styles.itemInfo}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemPrice}>R$ {item.value.toFixed(2)}</Text>
-      <Text style={styles.itemPrice}>Tamanho: {item.size}</Text>
-      </View>
-      <View style={styles.quantityContainer}>
-        <TouchableOpacity onPress={() => decrementQuantity(item.id)} style={styles.quantityButton}>
-          <Text style={styles.buttonText}>-</Text>
-        </TouchableOpacity>
-        <Text style={styles.quantityText}>{item.quantity}</Text>
-        <TouchableOpacity onPress={() => incrementQuantity(item.id)} style={styles.quantityButton}>
-          <Text style={styles.buttonText}>+</Text>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity onPress={() => removeFromCart(item.id)} style={styles.removeButton}>
-        <Text style={styles.removeButtonText}>Remover</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+  const navigation = useNavigation();
 
-export default function ShoppingCartScreen({navigation}) {
-  const { cartItems, cartTotal, clearCart } = useShoppingCart();
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      Alert.alert('Carrinho vazio', 'Adicione produtos antes de finalizar a compra.');
+      return;
+    }
+    navigation.navigate('CheckoutScreen');
+  };
 
-  if (cartItems.length === 0) {
+  const renderItem = ({ item }) => {
+    const unitPriceFormatted = `${item.currencySymbol} ${(Number(item.unitValueOriginal) || 0).toFixed(2)}`;
+    const subtotalBRL = `R$ ${(Number(item.unitValueConverted || 0) * item.quantity).toFixed(2)}`;
+
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.emptyCartContainer}>
-          <Text style={styles.emptyCartText}>Seu carrinho está vazio.</Text>
+      <View style={styles.card}>
+        <View style={styles.infoContainer}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.detail}>Tamanho: {item.size}</Text>
+          <Text style={styles.detail}>Quantidade: {item.quantity}</Text>
+          <Text style={styles.detail}>Valor unitário: {unitPriceFormatted}</Text>
+          <Text style={styles.detail}>Subtotal: {subtotalBRL}</Text>
         </View>
-      </SafeAreaView>
+
+        <View style={styles.actions}>
+          <View style={styles.qtyButtons}>
+            <TouchableOpacity onPress={() => decrementQuantity(item.id)}>
+              <Ionicons name="remove-circle-outline" size={24} color="gray" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => incrementQuantity(item.id)} style={{ marginLeft: 8 }}>
+              <Ionicons name="add-circle-outline" size={24} color="gray" />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity onPress={() => removeFromCart(item.id)}>
+            <Ionicons name="trash" size={24} color="#B00020" />
+          </TouchableOpacity>
+        </View>
+      </View>
     );
-  }
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <FlatList
         data={cartItems}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => <CartItem item={item} />}
-        ListHeaderComponent={() => <Text style={styles.header}>Meu Carrinho</Text>}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 100 }}
       />
-      <View style={styles.footer}>
-        <Text style={styles.totalText}>Total: R$ {cartTotal.toFixed(2)}</Text>
-        <TouchableOpacity style={styles.clearButton} onPress={clearCart}>
-          <Text style={styles.actionButtonText}>Limpar Carrinho</Text>
+
+      <View style={styles.totalContainer}>
+        <Text style={styles.totalText}>Total (em R$): R$ {cartTotalBRL.toFixed(2)}</Text>
+        <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
+          <Text style={styles.checkoutText}>Finalizar Compra</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.orderButton} onPress={()=> navigation.navigate("CheckoutScreen")}>
-          <Text style={styles.actionButtonText}>Fazer Pedido</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f4f4f8',
-    },
-    emptyCartContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    emptyCartText: {
-        fontSize: 18,
-        color: '#555',
-    },
-    header: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginVertical: 20,
-    },
-    itemContainer: {
-        backgroundColor: '#fff',
-        padding: 15,
-        marginVertical: 8,
-        marginHorizontal: 16,
-        borderRadius: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        elevation: 2,
-    },
-    itemInfo: {
-        flex: 2,
-    },
-    itemName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    itemPrice: {
-        fontSize: 14,
-        color: '#888',
-    },
-    quantityContainer: {
-        flex: 1.5,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    quantityButton: {
-        padding: 8,
-        backgroundColor: '#ddd',
-        borderRadius: 5,
-    },
-    buttonText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    quantityText: {
-        marginHorizontal: 15,
-        fontSize: 16,
-    },
-    removeButton: {
-        marginLeft: 10,
-    },
-    removeButtonText: {
-        color: 'red',
-        fontSize: 12
-    },
-    footer: {
-        padding: 20,
-        borderTopWidth: 1,
-        borderColor: '#eee',
-        backgroundColor: '#fff',
-    },
-    totalText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'right',
-        marginBottom: 10,
-    },
-    clearButton: {
-        backgroundColor: '#ff4d4d',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    orderButton: {
-        backgroundColor: 'green',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    actionButtonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 16,
-    }
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  card: {
+    backgroundColor: '#f9f9f9',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  infoContainer: {
+    marginBottom: 8,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  detail: {
+    fontSize: 14,
+    color: '#555',
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  qtyButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  totalContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+  },
+  totalText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  checkoutButton: {
+    backgroundColor: '#06C823',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  checkoutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });

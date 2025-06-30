@@ -9,54 +9,56 @@ export default function CheckoutScreen({ navigation }) {
   const { user } = useAuth();
 
   const finalizePurchase = async () => {
-    if (!user) {
-      Alert.alert('Erro', 'Você precisa estar logado para finalizar a compra.');
-      return;
+  if (!user) {
+    Alert.alert('Erro', 'Você precisa estar logado para finalizar a compra.');
+    return;
+  }
+
+  if (cartItems.length === 0) {
+    Alert.alert('Carrinho vazio', 'Adicione produtos ao carrinho antes de finalizar.');
+    return;
+  }
+
+  const invalidQuantityItem = cartItems.find(item => item.quantity <= 0);
+  if (invalidQuantityItem) {
+    Alert.alert('Quantidade inválida', 'Algum item no carrinho tem quantidade zero ou inválida.');
+    return;
+  }
+
+  const orderItems = cartItems.map(item => ({
+  productId: item.id.substring(0, 36), 
+  quantity: item.quantity,
+  size: item.size || undefined,
+}));
+
+
+  try {
+    const { order, error } = await createOrder(orderItems, {
+      'X-User-Id': user.id,
+      'X-User-Email': user.email,
+      'X-User-Type': user.type,
+    });
+
+    if (!error) {
+      Alert.alert(
+        'Pedido realizado com sucesso!',
+        'Obrigado pela sua compra.',
+        [{
+          text: 'OK',
+          onPress: () => {
+            clearCart();
+            navigation.navigate('Pedidos');
+          },
+        }]
+      );
+    } else {
+      Alert.alert('Erro', error);
     }
+  } catch (error) {
+    Alert.alert('Erro', 'Falha ao finalizar o pedido.');
+  }
+};
 
-    if (cartItems.length === 0) {
-      Alert.alert('Carrinho vazio', 'Adicione produtos ao carrinho antes de finalizar.');
-      return;
-    }
-
-    const invalidQuantityItem = cartItems.find(item => item.quantity <= 0);
-    if (invalidQuantityItem) {
-      Alert.alert('Quantidade inválida', 'Algum item no carrinho tem quantidade zero ou inválida.');
-      return;
-    }
-
-    const orderItems = cartItems.map(item => ({
-      productId: item.originalId || item.id.split('-').slice(0, 5).join('-'),
-      quantity: item.quantity,
-      size: item.size || undefined,
-    }));
-
-    try {
-      const { order, error } = await createOrder(orderItems, {
-        'X-User-Id': user.id,
-        'X-User-Email': user.email,
-        'X-User-Type': user.type,
-      });
-
-      if (!error) {
-        Alert.alert(
-          'Pedido realizado com sucesso!',
-          'Obrigado pela sua compra.',
-          [{
-            text: 'OK',
-            onPress: () => {
-              clearCart();
-              navigation.navigate('Pedidos');
-            },
-          }]
-        );
-      } else {
-        Alert.alert('Erro', error);
-      }
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao finalizar o pedido.');
-    }
-  };
 
   const renderItem = ({ item }) => {
     const unitPriceFormatted = `${item.currencySymbol || 'R$'} ${(Number(item.unitValueConverted) || 0).toFixed(2)}`;
